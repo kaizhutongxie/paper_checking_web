@@ -1,0 +1,9 @@
+E:\gitee\paper_checking_web\obj\Debug\net8.0\paper_checking_web.csproj.AssemblyReference.cache
+E:\gitee\paper_checking_web\obj\Debug\net8.0\rpswa.dswa.cache.json
+E:\gitee\paper_checking_web\obj\Debug\net8.0\paper_checking_web.GeneratedMSBuildEditorConfig.editorconfig
+E:\gitee\paper_checking_web\obj\Debug\net8.0\paper_checking_web.AssemblyInfoInputs.cache
+E:\gitee\paper_checking_web\obj\Debug\net8.0\paper_checking_web.AssemblyInfo.cs
+E:\gitee\paper_checking_web\obj\Debug\net8.0\paper_checking_web.csproj.CoreCompileInputs.cache
+E:\gitee\paper_checking_web\obj\Debug\net8.0\paper_checking_web.MvcApplicationPartsAssemblyInfo.cs
+E:\gitee\paper_checking_web\obj\Debug\net8.0\paper_checking_web.MvcApplicationPartsAssemblyInfo.cache
+E:\gitee\paper_checking_web\obj\Debug\net8.0\paper_checking_web.sourcelink.json

@@ -1,6 +1,10 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using PdfSharp.Pdf.IO;
+using PdfSharp.Pdf;
+using Xceed.Document.NET;
+using paper_checking_web.Models;
+using Xceed.Words.NET;
 
 namespace paper_checking_web.Services;
 
@@ -75,15 +79,18 @@ public class WordConverter : IDocumentConverter
         try
         {
             // 使用 DocX 库读取 DOCX 文件
-            using var doc = DocX.Load(filePath);
-            var text = doc.Text;
-            
-            // 清理文本：替换换行符，只保留中文和标点
-            text = text.Replace("#", "").Replace('\r', '#').Replace('\n', '#');
-            text = Regex.Replace(text, @"[^\u4e00-\u9fa5\《\》\（\）\——\；\，\。\""\！\#]", "");
-            text = new Regex("[#]+").Replace(text, "@@").Trim();
-            
-            return TextFormat(text, blockText);
+            var doc = DocX.Load(filePath);
+            using (doc)
+            {
+                var text = doc.Text;
+                
+                // 清理文本：替换换行符，只保留中文和标点
+                text = text.Replace("#", "").Replace('\r', '#').Replace('\n', '#');
+                text = Regex.Replace(text, @"[^\u4e00-\u9fa5\《\》\（\）\——\；\，\。\""\！\#]", "");
+                text = new Regex("[#]+").Replace(text, "@@").Trim();
+                
+                return TextFormat(text, blockText);
+            }
         }
         catch
         {
@@ -129,7 +136,7 @@ public class PdfConverter : IDocumentConverter
         try
         {
             // 使用 PdfSharpCore 读取 PDF 文件
-            using var document = PdfSharp.Pdf.IO.PdfReader.Open(filePath, PdfSharp.Pdf.IO.PdfDocumentOpenMode.Import);
+            var document = PdfReader.Open(filePath, PdfDocumentOpenMode.Import);
             var text = new StringBuilder();
             
             for (int i = 0; i < document.PageCount; i++)
