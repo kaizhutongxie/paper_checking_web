@@ -104,6 +104,21 @@ public class CheckController : ControllerBase
     }
 
     /// <summary>
+    /// 选择路径（打开文件夹对话框）
+    /// </summary>
+    [HttpPost("select-path")]
+    public ActionResult<SelectPathResponse> SelectPath([FromBody] SelectPathRequest request)
+    {
+        // TODO: 实现文件夹选择器功能
+        // 目前返回提示，让前端手动输入
+        return Ok(new SelectPathResponse 
+        { 
+            Path = "", 
+            Message = "请在下方输入框手动输入路径" 
+        });
+    }
+
+    /// <summary>
     /// 开始查重任务
     /// </summary>
     [HttpPost("start")]
@@ -211,6 +226,24 @@ public class CheckRequest
     public bool Recover { get; set; }
     public string ToCheckPaperPath { get; set; } = string.Empty;
     public string FinalReportPath { get; set; } = string.Empty;
+    public string CompareLibraryPath { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// 选择路径请求
+/// </summary>
+public class SelectPathRequest
+{
+    public string PathKey { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// 选择路径响应
+/// </summary>
+public class SelectPathResponse
+{
+    public string Path { get; set; } = string.Empty;
+    public string Message { get; set; } = string.Empty;
 }
 
 /// <summary>

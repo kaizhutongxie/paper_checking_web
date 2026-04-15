@@ -34,46 +34,81 @@
             </div>
 
             <div class="main-card">
-                <!-- 上传区域 -->
-                <el-upload
-                    ref="uploadRef"
-                    drag
-                    :auto-upload="false"
-                    :on-change="handleFileChange"
-                    :limit="1"
-                    accept=".doc,.docx,.pdf,.txt"
-                >
-                    <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-                    <div class="el-upload__text">
-                        拖拽文件到此处或<em>点击上传</em>
+                <!-- 步骤 1: 选择查重模式 -->
+                <div v-if="currentStep === 1">
+                    <h3>请选择查重模式：</h3>
+                    <el-radio-group v-model="checkMode" size="large" style="margin: 20px 0;">
+                        <el-radio-button label="vertical">纵向模式</el-radio-button>
+                        <el-radio-button label="horizontal">横向模式</el-radio-button>
+                    </el-radio-group>
+                    <div class="toolbar">
+                        <el-button type="primary" size="large" @click="goToStep2" :disabled="!checkMode">下一步</el-button>
                     </div>
-                    <template #tip>
-                        <div class="el-upload__tip">
-                            支持格式：doc/docx/pdf/txt，最大 100MB
-                        </div>
-                    </template>
-                </el-upload>
-
-                <!-- 比对源选择 -->
-                <div v-if="selectedFile" style="margin: 20px 0;">
-                    <h3>选择比对源：</h3>
-                    <el-checkbox-group v-model="selectedSources" style="margin: 10px 0;">
-                        <el-checkbox 
-                            v-for="source in compareSources" 
-                            :key="source.id" 
-                            :label="source.id"
-                        >
-                            {{ source.name }}
-                        </el-checkbox>
-                    </el-checkbox-group>
                 </div>
 
-                <!-- 开始检测按钮 -->
-                <div class="toolbar" v-if="selectedFile">
-                    <el-button type="primary" size="large" @click="startCheck" :loading="isChecking">
-                        开始检测
-                    </el-button>
-                    <el-button @click="resetForm">重置</el-button>
+                <!-- 步骤 2: 选择路径 -->
+                <div v-if="currentStep === 2">
+                    <h3>请配置路径信息（当前模式：{{ checkMode === 'vertical' ? '纵向模式' : '横向模式' }}）：</h3>
+                    
+                    <!-- 路径 1: 被查重路径 -->
+                    <div style="margin: 20px 0;">
+                        <el-form-item label="被查重路径：" label-width="120px">
+                            <el-input 
+                                v-model="paths.toCheckPath" 
+                                placeholder="请输入或选择要被查重的文件/文件夹路径"
+                                clearable
+                            >
+                                <template #append>
+                                    <el-button @click="selectPath('toCheckPath')">选择路径</el-button>
+                                </template>
+                            </el-input>
+                            <div style="font-size: 12px; color: #909399; margin-top: 5px;">
+                                {{ checkMode === 'vertical' ? '选择单个论文文件或包含多篇论文的文件夹' : '选择包含多篇论文的文件夹' }}
+                            </div>
+                        </el-form-item>
+                    </div>
+
+                    <!-- 路径 2: 比对库路径 -->
+                    <div style="margin: 20px 0;">
+                        <el-form-item label="比对库路径：" label-width="120px">
+                            <el-input 
+                                v-model="paths.compareLibraryPath" 
+                                placeholder="请输入或选择比对库文件/文件夹路径"
+                                clearable
+                            >
+                                <template #append>
+                                    <el-button @click="selectPath('compareLibraryPath')">选择路径</el-button>
+                                </template>
+                            </el-input>
+                            <div style="font-size: 12px; color: #909399; margin-top: 5px;">
+                                {{ checkMode === 'vertical' ? '选择参考论文库文件夹' : '选择同一课题组的论文文件夹进行互相比对' }}
+                            </div>
+                        </el-form-item>
+                    </div>
+
+                    <!-- 路径 3: 结果存放路径 -->
+                    <div style="margin: 20px 0;">
+                        <el-form-item label="结果存放路径：" label-width="120px">
+                            <el-input 
+                                v-model="paths.resultPath" 
+                                placeholder="请输入或选择检测结果保存路径"
+                                clearable
+                            >
+                                <template #append>
+                                    <el-button @click="selectPath('resultPath')">选择路径</el-button>
+                                </template>
+                            </el-input>
+                            <div style="font-size: 12px; color: #909399; margin-top: 5px;">
+                                选择检测报告保存的文件夹路径
+                            </div>
+                        </el-form-item>
+                    </div>
+
+                    <div class="toolbar">
+                        <el-button @click="currentStep = 1">上一步</el-button>
+                        <el-button type="primary" size="large" @click="startCheck" :loading="isChecking" :disabled="!validatePaths()">开始检测</el-button>
+                        <el-button @click="resetForm">重置</el-button>
+                    </div>
                 </div>
 
                 <!-- 进度显示 -->
@@ -124,6 +159,7 @@
                         <el-button type="success" @click="downloadReport('rtf')">下载 RTF 报告</el-button>
                         <el-button type="warning" @click="downloadReport('pdf')">下载 PDF 报告</el-button>
                         <el-button type="primary" @click="downloadReport('docx')">下载 Word 报告</el-button>
+                        <el-button @click="resetForm">重新检测</el-button>
                     </div>
                 </div>
             </div>
@@ -139,86 +175,102 @@
 
         const app = createApp({
             setup() {
-                const selectedFile = ref(null);
-                const selectedSources = ref([1, 2, 3, 5]);
-                const compareSources = ref([]);
+                const currentStep = ref(1);
+                const checkMode = ref(''); // 'vertical' or 'horizontal'
+                const paths = reactive({
+                    toCheckPath: '',
+                    compareLibraryPath: '',
+                    resultPath: ''
+                });
                 const isChecking = ref(false);
                 const progress = reactive({ percent: 0, status: '', message: '', currentStage: '' });
                 const checkResult = ref(null);
-                const socket = ref(null);
                 const currentTaskId = ref('');
 
                 const API_BASE = window.location.origin;
 
-                // 加载比对源列表
-                const loadCompareSources = async () => {
+                // 进入步骤 2
+                const goToStep2 = () => {
+                    currentStep.value = 2;
+                };
+
+                // 选择路径（模拟文件对话框）
+                const selectPath = async (pathKey) => {
                     try {
-                        const res = await fetch(`${API_BASE}/api/check/sources`);
-                        const data = await res.json();
-                        compareSources.value = data;
+                        // 调用后端 API 获取文件夹选择器
+                        const res = await fetch(`${API_BASE}/api/check/select-path`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ pathKey })
+                        });
+                        
+                        if (res.ok) {
+                            const data = await res.json();
+                            if (data.path) {
+                                paths[pathKey] = data.path;
+                            }
+                        } else {
+                            // 如果后端不支持，显示提示让用户手动输入
+                            ElMessage.info('请在下方输入框手动输入路径');
+                        }
                     } catch (e) {
-                        // 使用默认值
-                        compareSources.value = [
-                            { id: 1, name: '中国学术期刊网络出版总库' },
-                            { id: 2, name: '中国博士学位论文全文数据库' },
-                            { id: 3, name: '中国优秀硕士学位论文全文数据库' },
-                            { id: 4, name: '中国重要会议论文全文数据库' },
-                            { id: 5, name: '互联网资源' }
-                        ];
+                        ElMessage.info('请在下方输入框手动输入路径');
                     }
                 };
 
-                // 处理文件选择
-                const handleFileChange = (file) => {
-                    selectedFile.value = file.raw;
+                // 验证路径是否完整
+                const validatePaths = () => {
+                    if (!paths.toCheckPath.trim()) {
+                        ElMessage.warning('请输入被查重路径');
+                        return false;
+                    }
+                    if (!paths.compareLibraryPath.trim()) {
+                        ElMessage.warning('请输入比对库路径');
+                        return false;
+                    }
+                    if (!paths.resultPath.trim()) {
+                        ElMessage.warning('请输入结果存放路径');
+                        return false;
+                    }
+                    return true;
                 };
 
                 // 开始检测
                 const startCheck = async () => {
-                    if (!selectedFile.value) {
-                        ElMessage.warning('请先选择文件');
+                    if (!validatePaths()) {
                         return;
                     }
 
                     isChecking.value = true;
                     progress.percent = 0;
                     progress.currentStage = '准备中...';
+                    progress.message = '正在提交任务...';
                     checkResult.value = null;
 
                     try {
-                        // 上传文件
-                        const formData = new FormData();
-                        formData.append('file', selectedFile.value);
-                        formData.append('sourceIds', JSON.stringify(selectedSources.value));
-
-                        const uploadRes = await fetch(`${API_BASE}/api/check/upload`, {
-                            method: 'POST',
-                            body: formData
-                        });
-
-                        if (!uploadRes.ok) throw new Error('上传失败');
-                        
-                        const uploadResult = await uploadRes.json();
-                        currentTaskId.value = uploadResult.taskId;
-
-                        // 连接 SignalR
-                        connectSignalR(currentTaskId.value);
-
                         // 提交检测任务
-                        const submitRes = await fetch(`${API_BASE}/api/check/submit`, {
+                        const submitRes = await fetch(`${API_BASE}/api/check/start`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
-                                taskId: currentTaskId.value,
-                                fileName: selectedFile.value.name,
-                                filePath: uploadResult.filePath,
-                                sourceIds: selectedSources.value
+                                checkWay: checkMode.value === 'vertical' ? 0 : 1,
+                                checkThreshold: 13,
+                                recover: false,
+                                toCheckPaperPath: paths.toCheckPath,
+                                finalReportPath: paths.resultPath,
+                                compareLibraryPath: paths.compareLibraryPath
                             })
                         });
 
                         if (!submitRes.ok) throw new Error('提交任务失败');
+                        
+                        const submitResult = await submitRes.json();
+                        currentTaskId.value = submitResult.taskId;
 
                         ElMessage.success('任务已提交，正在检测中...');
+
+                        // 轮询进度
+                        pollProgress(currentTaskId.value);
 
                     } catch (error) {
                         ElMessage.error(error.message);
@@ -226,30 +278,26 @@
                     }
                 };
 
-                // 连接 SignalR
-                const connectSignalR = (taskId) => {
-                    // 简单轮询实现（生产环境应使用真正的 SignalR 客户端）
+                // 轮询进度
+                const pollProgress = (taskId) => {
                     const pollInterval = setInterval(async () => {
                         try {
-                            const res = await fetch(`${API_BASE}/api/check/status/${taskId}`);
+                            const res = await fetch(`${API_BASE}/api/check/progress/${taskId}`);
                             if (res.ok) {
                                 const status = await res.json();
-                                if (status.progress) {
-                                    progress.percent = status.progress.percent;
-                                    progress.currentStage = status.progress.currentStage;
-                                    progress.message = status.progress.message;
+                                progress.percent = status.progressPercent || 0;
+                                progress.currentStage = status.currentStage || '';
+                                progress.message = status.message || '';
+                                
+                                if (status.progressPercent >= 100 || status.status === 'completed') {
+                                    clearInterval(pollInterval);
+                                    isChecking.value = false;
                                     
-                                    if (status.isCompleted) {
-                                        clearInterval(pollInterval);
-                                        isChecking.value = false;
-                                        
-                                        if (status.isSuccess) {
-                                            const resultRes = await fetch(`${API_BASE}/api/check/result/${taskId}`);
-                                            checkResult.value = await resultRes.json();
-                                            ElMessage.success('检测完成！');
-                                        } else {
-                                            ElMessage.error(status.errorMessage || '检测失败');
-                                        }
+                                    // 获取结果
+                                    const resultRes = await fetch(`${API_BASE}/api/check/result/${taskId}`);
+                                    if (resultRes.ok) {
+                                        checkResult.value = await resultRes.json();
+                                        ElMessage.success('检测完成！');
                                     }
                                 }
                             }
@@ -270,7 +318,11 @@
 
                 // 重置表单
                 const resetForm = () => {
-                    selectedFile.value = null;
+                    currentStep.value = 1;
+                    checkMode.value = '';
+                    paths.toCheckPath = '';
+                    paths.compareLibraryPath = '';
+                    paths.resultPath = '';
                     progress.percent = 0;
                     progress.message = '';
                     progress.currentStage = '';
@@ -285,18 +337,16 @@
                     return '#F56C6C';
                 };
 
-                onMounted(() => {
-                    loadCompareSources();
-                });
-
                 return {
-                    selectedFile,
-                    selectedSources,
-                    compareSources,
+                    currentStep,
+                    checkMode,
+                    paths,
                     isChecking,
                     progress,
                     checkResult,
-                    handleFileChange,
+                    goToStep2,
+                    selectPath,
+                    validatePaths,
                     startCheck,
                     downloadReport,
                     resetForm,
