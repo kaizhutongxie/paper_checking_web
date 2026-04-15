@@ -62,18 +62,6 @@
               "target": "Package",
               "version": "[8.0.0, )"
             },
-            "Microsoft.EntityFrameworkCore": {
-              "target": "Package",
-              "version": "[8.0.0, )"
-            },
-            "Microsoft.EntityFrameworkCore.Design": {
-              "target": "Package",
-              "version": "[8.0.0, )"
-            },
-            "Microsoft.EntityFrameworkCore.Sqlite": {
-              "target": "Package",
-              "version": "[8.0.0, )"
-            },
             "Mono.Posix.NETStandard": {
               "target": "Package",
               "version": "[1.0.0, )"
