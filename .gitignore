@@ -1,12 +1,38 @@
-# 全局忽略文件
+```
+# Build artifacts
 bin/
 obj/
-*.user
-*.suo
 *.dll
 *.exe
 *.pdb
-*.xml
+*.nupkg
+*.snupkg
+
+# Dependencies
+packages/
+node_modules/
+.nuget/
+
+# Logs
 *.log
-data/
-appsettings.local.json
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Editors
+.vscode/
+.idea/
+*.userprefs
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+```
