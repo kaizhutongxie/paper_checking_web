@@ -34,78 +34,97 @@
             </div>
 
             <div class="main-card">
-                <!-- 查重模式选择 -->
-                <h3 style="margin-bottom: 15px;">选择查重模式：</h3>
-                <el-radio-group v-model="checkMode" style="margin-bottom: 20px;">
-                    <el-radio-button label="vertical">纵向查重</el-radio-button>
-                    <el-radio-button label="horizontal">横向查重</el-radio-button>
-                </el-radio-group>
-
-                <!-- 模式说明 -->
-                <el-alert 
-                    v-if="checkMode === 'vertical'"
-                    title="纵向查重：选择待查文件后，将该批文件和比对库中的文件比对。通常用以检查该批文件有没有复制比对库中的文本。"
-                    type="info"
-                    show-icon
-                    style="margin-bottom: 20px;"
-                />
-                <el-alert 
-                    v-else
-                    title="横向查重：选择一批待查文件后，在该批次文件之间进行比对，用以检查该批次文件有没有互相复制的情况。"
-                    type="warning"
-                    show-icon
-                    style="margin-bottom: 20px;"
-                />
-
-                <!-- 上传区域 -->
-                <el-upload
-                    ref="uploadRef"
-                    drag
-                    :auto-upload="false"
-                    :on-change="handleFileChange"
-                    :limit="checkMode === 'horizontal' ? 10 : 1"
-                    :multiple="checkMode === 'horizontal'"
-                    accept=".doc,.docx,.pdf,.txt"
-                >
-                    <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-                    <div class="el-upload__text">
-                        {{ checkMode === 'horizontal' ? '拖拽多个文件到此处或点击上传（支持批量）' : '拖拽文件到此处或点击上传' }}
+                <!-- 步骤 1: 选择查重模式 -->
+                <div v-if="currentStep === 1">
+                    <h3>请选择查重模式：</h3>
+                    <el-radio-group v-model="checkMode" size="large" style="margin: 20px 0;">
+                        <el-radio-button label="vertical">纵向模式</el-radio-button>
+                        <el-radio-button label="horizontal">横向模式</el-radio-button>
+                    </el-radio-group>
+                    <div style="margin: 20px 0;">
+                        <el-alert 
+                            v-if="checkMode === 'vertical'"
+                            title="纵向查重：将指定路径的文件与比对库中的文件进行比对，检查是否复制了比对库中的文本。"
+                            type="info"
+                            show-icon
+                            :closable="false"
+                        />
+                        <el-alert 
+                            v-else-if="checkMode === 'horizontal'"
+                            title="横向查重：在指定路径的多个文件之间进行互相比对，检查文件之间是否存在互相复制的情况。"
+                            type="warning"
+                            show-icon
+                            :closable="false"
+                        />
                     </div>
-                    <template #tip>
-                        <div class="el-upload__tip">
-                            支持格式：doc/docx/pdf/txt，最大 100MB
-                            {{ checkMode === 'horizontal' ? '（可选择多个文件进行互相比对）' : '' }}
-                        </div>
-                    </template>
-                </el-upload>
-
-                <!-- 比对库选择（仅纵向查重显示） -->
-                <div v-if="selectedFiles.length > 0 && checkMode === 'vertical'" style="margin: 20px 0;">
-                    <h3>选择本地比对库目录：</h3>
-                    <el-input 
-                        v-model="compareLibraryPath" 
-                        placeholder="请输入比对库的本地路径，例如：D:\ComparisonLibrary"
-                        style="margin: 10px 0;"
-                    >
-                        <template #prepend>比对库路径</template>
-                        <template #append>
-                            <el-button @click="selectLibraryPath">浏览</el-button>
-                        </template>
-                    </el-input>
-                    <el-alert
-                        title="请选择包含比对文件的本地文件夹，系统将只与该文件夹内的文件进行比对。"
-                        type="success"
-                        show-icon
-                        :closable="false"
-                    />
+                    <div class="toolbar">
+                        <el-button type="primary" size="large" @click="goToStep2" :disabled="!checkMode">下一步</el-button>
+                    </div>
                 </div>
 
-                <!-- 开始检测按钮 -->
-                <div class="toolbar" v-if="selectedFiles.length > 0">
-                    <el-button type="primary" size="large" @click="startCheck" :loading="isChecking">
-                        {{ checkMode === 'vertical' ? '开始纵向查重' : '开始横向查重' }}
-                    </el-button>
-                    <el-button @click="resetForm">重置</el-button>
+                <!-- 步骤 2: 输入三个路径 -->
+                <div v-if="currentStep === 2">
+                    <h3>请配置路径信息（当前模式：{{ checkMode === 'vertical' ? '纵向模式' : '横向模式' }}）：</h3>
+                    
+                    <!-- 路径 1: 被查重路径 -->
+                    <div style="margin: 20px 0;">
+                        <el-form-item label="被查重路径：" label-width="120px">
+                            <el-input 
+                                v-model="paths.toCheckPath" 
+                                placeholder="请输入要被查重的文件/文件夹路径"
+                                clearable
+                            >
+                                <template #append>
+                                    <el-button @click="selectPath('toCheckPath')">选择路径</el-button>
+                                </template>
+                            </el-input>
+                            <div style="font-size: 12px; color: #909399; margin-top: 5px;">
+                                {{ checkMode === 'vertical' ? '单个论文文件或包含多篇论文的文件夹' : '包含多篇论文的文件夹' }}
+                            </div>
+                        </el-form-item>
+                    </div>
+
+                    <!-- 路径 2: 比对库路径 -->
+                    <div style="margin: 20px 0;">
+                        <el-form-item label="比对库路径：" label-width="120px">
+                            <el-input 
+                                v-model="paths.compareLibraryPath" 
+                                placeholder="请输入比对库文件/文件夹路径"
+                                clearable
+                            >
+                                <template #append>
+                                    <el-button @click="selectPath('compareLibraryPath')">选择路径</el-button>
+                                </template>
+                            </el-input>
+                            <div style="font-size: 12px; color: #909399; margin-top: 5px;">
+                                {{ checkMode === 'vertical' ? '参考论文库文件夹' : '同一课题组的论文文件夹进行互相比对' }}
+                            </div>
+                        </el-form-item>
+                    </div>
+
+                    <!-- 路径 3: 结果存放路径 -->
+                    <div style="margin: 20px 0;">
+                        <el-form-item label="结果存放路径：" label-width="120px">
+                            <el-input 
+                                v-model="paths.resultPath" 
+                                placeholder="请输入检测结果保存路径"
+                                clearable
+                            >
+                                <template #append>
+                                    <el-button @click="selectPath('resultPath')">选择路径</el-button>
+                                </template>
+                            </el-input>
+                            <div style="font-size: 12px; color: #909399; margin-top: 5px;">
+                                检测报告保存的文件夹路径
+                            </div>
+                        </el-form-item>
+                    </div>
+
+                    <div class="toolbar">
+                        <el-button @click="currentStep = 1">上一步</el-button>
+                        <el-button type="primary" size="large" @click="startCheck" :loading="isChecking" :disabled="!validatePaths()">开始检测</el-button>
+                        <el-button @click="resetForm">重置</el-button>
+                    </div>
                 </div>
 
                 <!-- 进度显示 -->
