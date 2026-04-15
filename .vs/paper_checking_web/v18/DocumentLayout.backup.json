@@ -3,6 +3,18 @@
   "WorkspaceRootPath": "E:\\gitee\\paper_checking_web\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{67AB688E-BFB7-77E4-8DA1-C8056366CFD5}|paper_checking_web.csproj|e:\\gitee\\paper_checking_web\\wwwroot\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{67AB688E-BFB7-77E4-8DA1-C8056366CFD5}|paper_checking_web.csproj|solutionrelative:wwwroot\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{67AB688E-BFB7-77E4-8DA1-C8056366CFD5}|paper_checking_web.csproj|e:\\gitee\\paper_checking_web\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{67AB688E-BFB7-77E4-8DA1-C8056366CFD5}|paper_checking_web.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{67AB688E-BFB7-77E4-8DA1-C8056366CFD5}|paper_checking_web.csproj|e:\\gitee\\paper_checking_web\\clientapp\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{67AB688E-BFB7-77E4-8DA1-C8056366CFD5}|paper_checking_web.csproj|solutionrelative:clientapp\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{67AB688E-BFB7-77E4-8DA1-C8056366CFD5}|paper_checking_web.csproj|e:\\gitee\\paper_checking_web\\services\\papercheckservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{67AB688E-BFB7-77E4-8DA1-C8056366CFD5}|paper_checking_web.csproj|solutionrelative:services\\papercheckservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -30,7 +42,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Bookmark",
@@ -41,21 +53,65 @@
               "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
             },
             {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "PaperCheckService.cs",
-              "DocumentMoniker": "E:\\gitee\\paper_checking_web\\Services\\PaperCheckService.cs",
-              "RelativeDocumentMoniker": "Services\\PaperCheckService.cs",
-              "ToolTip": "E:\\gitee\\paper_checking_web\\Services\\PaperCheckService.cs",
-              "RelativeToolTip": "Services\\PaperCheckService.cs",
-              "ViewState": "AgIAAJUAAAAAAAAAAAAkwKkAAABWAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-15T05:57:32.887Z",
+              "Title": "index.html",
+              "DocumentMoniker": "E:\\gitee\\paper_checking_web\\wwwroot\\index.html",
+              "RelativeDocumentMoniker": "wwwroot\\index.html",
+              "ToolTip": "E:\\gitee\\paper_checking_web\\wwwroot\\index.html",
+              "RelativeToolTip": "wwwroot\\index.html",
+              "ViewState": "AgIAAKsAAAAAAAAAAAAAALoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-04-15T06:04:52.295Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "E:\\gitee\\paper_checking_web\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "E:\\gitee\\paper_checking_web\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-15T05:59:01.916Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "index.html",
+              "DocumentMoniker": "E:\\gitee\\paper_checking_web\\ClientApp\\index.html",
+              "RelativeDocumentMoniker": "ClientApp\\index.html",
+              "ToolTip": "E:\\gitee\\paper_checking_web\\ClientApp\\index.html",
+              "RelativeToolTip": "ClientApp\\index.html",
+              "ViewState": "AgIAACYBAAAAAAAAAAAAACoBAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-04-15T05:58:44.325Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "PaperCheckService.cs",
+              "DocumentMoniker": "E:\\gitee\\paper_checking_web\\Services\\PaperCheckService.cs",
+              "RelativeDocumentMoniker": "Services\\PaperCheckService.cs",
+              "ToolTip": "E:\\gitee\\paper_checking_web\\Services\\PaperCheckService.cs",
+              "RelativeToolTip": "Services\\PaperCheckService.cs",
+              "ViewState": "AgIAAJUAAAAAAAAAAAAkwJwAAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-15T05:57:32.887Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "CheckProgressHub.cs",
               "DocumentMoniker": "E:\\gitee\\paper_checking_web\\Hubs\\CheckProgressHub.cs",
               "RelativeDocumentMoniker": "Hubs\\CheckProgressHub.cs",
@@ -63,12 +119,11 @@
               "RelativeToolTip": "Hubs\\CheckProgressHub.cs",
               "ViewState": "AgIAANMAAAAAAAAAAAA4wOwAAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-15T05:56:53.032Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-15T05:56:53.032Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 5,
               "Title": "DocumentConverters.cs",
               "DocumentMoniker": "E:\\gitee\\paper_checking_web\\Services\\DocumentConverters.cs",
               "RelativeDocumentMoniker": "Services\\DocumentConverters.cs",
@@ -76,12 +131,11 @@
               "RelativeToolTip": "Services\\DocumentConverters.cs",
               "ViewState": "AgIAAEYAAAAAAAAAAAA5wFIAAAACAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-15T05:28:22.53Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-15T05:28:22.53Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 7,
               "Title": "paper_checking_web.csproj",
               "DocumentMoniker": "E:\\gitee\\paper_checking_web\\paper_checking_web.csproj",
               "RelativeDocumentMoniker": "paper_checking_web.csproj",
@@ -93,7 +147,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 6,
               "Title": "CheckController.cs",
               "DocumentMoniker": "E:\\gitee\\paper_checking_web\\Controllers\\CheckController.cs",
               "RelativeDocumentMoniker": "Controllers\\CheckController.cs",

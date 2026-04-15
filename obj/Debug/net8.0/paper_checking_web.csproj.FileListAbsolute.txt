@@ -174,3 +174,4 @@ E:\gitee\paper_checking_web\obj\Debug\net8.0\refint\paper_checking_web.dll
 E:\gitee\paper_checking_web\obj\Debug\net8.0\paper_checking_web.pdb
 E:\gitee\paper_checking_web\obj\Debug\net8.0\paper_checking_web.genruntimeconfig.cache
 E:\gitee\paper_checking_web\obj\Debug\net8.0\ref\paper_checking_web.dll
+E:\gitee\paper_checking_web\bin\Debug\net8.0\paper_checking_web.staticwebassets.runtime.json
