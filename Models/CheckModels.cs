@@ -113,7 +113,7 @@ public class CheckProgress
     public int ConvertedFiles { get; set; }
     public int CheckedFiles { get; set; }
     public int ExportedFiles { get; set; }
-    public int ProgressPercent => Percent;
+    public int ProgressPercent { get; set; }
     public string Status { get; set; } = "idle";
     public List<string> ErrorPapers { get; set; } = new();
 }
