@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using paper_checking_web.Data;
 using paper_checking_web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,10 +14,6 @@ builder.Services.AddSwaggerGen(c =>
         Description = "基于.NET 8 的跨平台论文查重系统，支持麒麟 V10 等 Linux 环境"
     });
 });
-
-// 添加数据库上下文（使用 SQLite）
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite("Data Source=paper_check.db"));
 
 // 注册文档转换服务
 builder.Services.AddScoped<ConverterFactory>();
@@ -66,9 +60,6 @@ app.UseStaticFiles();
 // 确保数据目录存在
 EnsureDataDirectories();
 
-// 初始化数据库
-InitializeDatabase(app);
-
 Console.WriteLine("论文查重系统启动成功！");
 Console.WriteLine("访问 Swagger UI: http://localhost:5000/swagger");
 
@@ -91,15 +82,4 @@ void EnsureDataDirectories()
             Directory.CreateDirectory(dir);
         }
     }
-}
-
-void InitializeDatabase(WebApplication app)
-{
-    using var scope = app.Services.CreateScope();
-    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    
-    // 确保数据库创建并应用种子数据
-    context.Database.EnsureCreated();
-    
-    Console.WriteLine("数据库初始化完成");
 }

@@ -28,7 +28,7 @@ namespace paper_checking_web.Services
         private readonly ConverterFactory _converterFactory;
         private readonly ReportGenerator _reportGenerator;
         
-        // 自建库内存缓存（实际应使用数据库）
+        // 自建库内存缓存
         private readonly List<string> _referenceLibrary = new();
 
         public PaperCheckService(
@@ -410,7 +410,7 @@ namespace paper_checking_web.Services
         /// </summary>
         private void InitializeReferenceLibrary()
         {
-            // 示例参考文档（实际应从数据库或文件系统加载）
+            // 示例参考文档（实际应从文件系统加载）
             _referenceLibrary.AddRange(new[]
             {
                 "机器学习是人工智能的一个分支，它通过算法使计算机能够从数据中学习并做出预测。",

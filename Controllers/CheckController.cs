@@ -43,7 +43,7 @@ public class CheckController : ControllerBase
     [HttpGet("config")]
     public ActionResult<CheckConfig> GetConfig()
     {
-        // TODO: 从配置文件或数据库读取
+        // TODO: 从配置文件读取
         return Ok(AppConfig.DefaultCheckConfig);
     }
 
@@ -64,7 +64,7 @@ public class CheckController : ControllerBase
             return BadRequest("查重方式必须为 0 或 1");
         }
 
-        // TODO: 保存配置到文件或数据库
+        // TODO: 保存配置到文件
         
         _logger.LogInformation("配置已更新：{@Config}", config);
         return Ok(config);
@@ -97,7 +97,7 @@ public class CheckController : ControllerBase
             return BadRequest("转换线程数必须在 1-99 之间");
         }
 
-        // TODO: 保存设置到文件或数据库
+        // TODO: 保存设置到文件
         
         _logger.LogInformation("设置已更新：{@Settings}", settings);
         return Ok(settings);
