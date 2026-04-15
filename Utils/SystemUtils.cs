@@ -1,5 +1,7 @@
+using System;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace paper_checking_web.Utils;
 
