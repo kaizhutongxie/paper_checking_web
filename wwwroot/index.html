@@ -34,44 +34,76 @@
             </div>
 
             <div class="main-card">
+                <!-- 查重模式选择 -->
+                <h3 style="margin-bottom: 15px;">选择查重模式：</h3>
+                <el-radio-group v-model="checkMode" style="margin-bottom: 20px;">
+                    <el-radio-button label="vertical">纵向查重</el-radio-button>
+                    <el-radio-button label="horizontal">横向查重</el-radio-button>
+                </el-radio-group>
+
+                <!-- 模式说明 -->
+                <el-alert 
+                    v-if="checkMode === 'vertical'"
+                    title="纵向查重：选择待查文件后，将该批文件和比对库中的文件比对。通常用以检查该批文件有没有复制比对库中的文本。"
+                    type="info"
+                    show-icon
+                    style="margin-bottom: 20px;"
+                />
+                <el-alert 
+                    v-else
+                    title="横向查重：选择一批待查文件后，在该批次文件之间进行比对，用以检查该批次文件有没有互相复制的情况。"
+                    type="warning"
+                    show-icon
+                    style="margin-bottom: 20px;"
+                />
+
                 <!-- 上传区域 -->
                 <el-upload
                     ref="uploadRef"
                     drag
                     :auto-upload="false"
                     :on-change="handleFileChange"
-                    :limit="1"
+                    :limit="checkMode === 'horizontal' ? 10 : 1"
+                    :multiple="checkMode === 'horizontal'"
                     accept=".doc,.docx,.pdf,.txt"
                 >
                     <el-icon class="el-icon--upload"><upload-filled /></el-icon>
                     <div class="el-upload__text">
-                        拖拽文件到此处或<em>点击上传</em>
+                        {{ checkMode === 'horizontal' ? '拖拽多个文件到此处或点击上传（支持批量）' : '拖拽文件到此处或点击上传' }}
                     </div>
                     <template #tip>
                         <div class="el-upload__tip">
                             支持格式：doc/docx/pdf/txt，最大 100MB
+                            {{ checkMode === 'horizontal' ? '（可选择多个文件进行互相比对）' : '' }}
                         </div>
                     </template>
                 </el-upload>
 
-                <!-- 比对源选择 -->
-                <div v-if="selectedFile" style="margin: 20px 0;">
-                    <h3>选择比对源：</h3>
-                    <el-checkbox-group v-model="selectedSources" style="margin: 10px 0;">
-                        <el-checkbox 
-                            v-for="source in compareSources" 
-                            :key="source.id" 
-                            :label="source.id"
-                        >
-                            {{ source.name }}
-                        </el-checkbox>
-                    </el-checkbox-group>
+                <!-- 比对库选择（仅纵向查重显示） -->
+                <div v-if="selectedFiles.length > 0 && checkMode === 'vertical'" style="margin: 20px 0;">
+                    <h3>选择本地比对库目录：</h3>
+                    <el-input 
+                        v-model="compareLibraryPath" 
+                        placeholder="请输入比对库的本地路径，例如：D:\ComparisonLibrary"
+                        style="margin: 10px 0;"
+                    >
+                        <template #prepend>比对库路径</template>
+                        <template #append>
+                            <el-button @click="selectLibraryPath">浏览</el-button>
+                        </template>
+                    </el-input>
+                    <el-alert
+                        title="请选择包含比对文件的本地文件夹，系统将只与该文件夹内的文件进行比对。"
+                        type="success"
+                        show-icon
+                        :closable="false"
+                    />
                 </div>
 
                 <!-- 开始检测按钮 -->
-                <div class="toolbar" v-if="selectedFile">
+                <div class="toolbar" v-if="selectedFiles.length > 0">
                     <el-button type="primary" size="large" @click="startCheck" :loading="isChecking">
-                        开始检测
+                        {{ checkMode === 'vertical' ? '开始纵向查重' : '开始横向查重' }}
                     </el-button>
                     <el-button @click="resetForm">重置</el-button>
                 </div>
@@ -139,9 +171,9 @@
 
         const app = createApp({
             setup() {
-                const selectedFile = ref(null);
-                const selectedSources = ref([1, 2, 3, 5]);
-                const compareSources = ref([]);
+                const checkMode = ref('vertical'); // vertical: 纵向查重，horizontal: 横向查重
+                const selectedFiles = ref([]);
+                const compareLibraryPath = ref('');
                 const isChecking = ref(false);
                 const progress = reactive({ percent: 0, status: '', message: '', currentStage: '' });
                 const checkResult = ref(null);
@@ -150,33 +182,31 @@
 
                 const API_BASE = window.location.origin;
 
-                // 加载比对源列表
-                const loadCompareSources = async () => {
-                    try {
-                        const res = await fetch(`${API_BASE}/api/check/sources`);
-                        const data = await res.json();
-                        compareSources.value = data;
-                    } catch (e) {
-                        // 使用默认值
-                        compareSources.value = [
-                            { id: 1, name: '中国学术期刊网络出版总库' },
-                            { id: 2, name: '中国博士学位论文全文数据库' },
-                            { id: 3, name: '中国优秀硕士学位论文全文数据库' },
-                            { id: 4, name: '中国重要会议论文全文数据库' },
-                            { id: 5, name: '互联网资源' }
-                        ];
+                // 处理文件选择
+                const handleFileChange = (file) => {
+                    if (file.raw) {
+                        // 单个文件
+                        selectedFiles.value = [file.raw];
+                    } else if (file.fileList) {
+                        // 多个文件
+                        selectedFiles.value = file.fileList.map(f => f.raw);
                     }
                 };
 
-                // 处理文件选择
-                const handleFileChange = (file) => {
-                    selectedFile.value = file.raw;
+                // 选择比对库路径（简化版本，用户手动输入）
+                const selectLibraryPath = () => {
+                    ElMessage.info('请在输入框中直接输入本地比对库文件夹路径，例如：D:\\ComparisonLibrary');
                 };
 
                 // 开始检测
                 const startCheck = async () => {
-                    if (!selectedFile.value) {
+                    if (selectedFiles.value.length === 0) {
                         ElMessage.warning('请先选择文件');
+                        return;
+                    }
+
+                    if (checkMode.value === 'vertical' && !compareLibraryPath.value.trim()) {
+                        ElMessage.warning('纵向查重请选择比对库路径');
                         return;
                     }
 
@@ -188,8 +218,13 @@
                     try {
                         // 上传文件
                         const formData = new FormData();
-                        formData.append('file', selectedFile.value);
-                        formData.append('sourceIds', JSON.stringify(selectedSources.value));
+                        selectedFiles.value.forEach(file => {
+                            formData.append('files', file);
+                        });
+                        formData.append('checkMode', checkMode.value);
+                        if (checkMode.value === 'vertical') {
+                            formData.append('compareLibraryPath', compareLibraryPath.value);
+                        }
 
                         const uploadRes = await fetch(`${API_BASE}/api/check/upload`, {
                             method: 'POST',
@@ -210,9 +245,10 @@
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                                 taskId: currentTaskId.value,
-                                fileName: selectedFile.value.name,
-                                filePath: uploadResult.filePath,
-                                sourceIds: selectedSources.value
+                                fileNames: selectedFiles.value.map(f => f.name),
+                                filePaths: uploadResult.filePaths || [uploadResult.filePath],
+                                checkMode: checkMode.value,
+                                compareLibraryPath: checkMode.value === 'vertical' ? compareLibraryPath.value : null
                             })
                         });
 
@@ -268,16 +304,6 @@
                     ElMessage.success(`正在下载${format.toUpperCase()}报告...`);
                 };
 
-                // 重置表单
-                const resetForm = () => {
-                    selectedFile.value = null;
-                    progress.percent = 0;
-                    progress.message = '';
-                    progress.currentStage = '';
-                    checkResult.value = null;
-                    currentTaskId.value = '';
-                };
-
                 // 获取相似度颜色
                 const getSimilarityColor = (similarity) => {
                     if (similarity < 10) return '#67C23A';
@@ -286,17 +312,30 @@
                 };
 
                 onMounted(() => {
-                    loadCompareSources();
+                    // 不需要加载比对源列表
                 });
 
+                // 重置表单
+                const resetForm = () => {
+                    checkMode.value = 'vertical';
+                    selectedFiles.value = [];
+                    compareLibraryPath.value = '';
+                    progress.percent = 0;
+                    progress.message = '';
+                    progress.currentStage = '';
+                    checkResult.value = null;
+                    currentTaskId.value = '';
+                };
+
                 return {
-                    selectedFile,
-                    selectedSources,
-                    compareSources,
+                    checkMode,
+                    selectedFiles,
+                    compareLibraryPath,
                     isChecking,
                     progress,
                     checkResult,
                     handleFileChange,
+                    selectLibraryPath,
                     startCheck,
                     downloadReport,
                     resetForm,
