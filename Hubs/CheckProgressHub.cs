@@ -135,7 +135,7 @@ namespace paper_checking_web.Hubs
     /// </summary>
     public class TaskStateManager
     {
-        private readonly ConcurrentDictionary<string, TaskStatus> _tasks = new();
+        private readonly ConcurrentDictionary<string, Models.TaskStatus> _tasks = new();
         private readonly IProgressNotificationService _notificationService;
         private readonly ILogger<TaskStateManager> _logger;
 
@@ -152,7 +152,7 @@ namespace paper_checking_web.Hubs
         /// </summary>
         public void CreateTask(string taskId, string fileName)
         {
-            var status = new TaskStatus
+            var status = new Models.TaskStatus
             {
                 TaskId = taskId,
                 FileName = fileName,
@@ -228,7 +228,7 @@ namespace paper_checking_web.Hubs
         /// <summary>
         /// 获取任务状态
         /// </summary>
-        public TaskStatus? GetTaskStatus(string taskId)
+        public Models.TaskStatus? GetTaskStatus(string taskId)
         {
             return _tasks.TryGetValue(taskId, out var status) ? status : null;
         }
@@ -236,7 +236,7 @@ namespace paper_checking_web.Hubs
         /// <summary>
         /// 获取所有任务列表
         /// </summary>
-        public IEnumerable<TaskStatus> GetAllTasks()
+        public IEnumerable<Models.TaskStatus> GetAllTasks()
         {
             return _tasks.Values;
         }

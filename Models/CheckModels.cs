@@ -212,3 +212,19 @@ public class ReportDetail
     public List<int> RepeatedPositions { get; set; } = new();
     public string RtfContent { get; set; } = string.Empty;
 }
+
+/// <summary>
+/// 任务状态信息
+/// </summary>
+public class TaskStatus
+{
+    public string TaskId { get; set; } = string.Empty;
+    public string FileName { get; set; } = string.Empty;
+    public bool IsCompleted { get; set; }
+    public bool IsSuccess { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public CheckProgress Progress { get; set; } = new();
+    public DateTime? CompletedAt { get; set; }
+    public CheckResult? Result { get; set; }
+    public string? ErrorMessage { get; set; }
+}

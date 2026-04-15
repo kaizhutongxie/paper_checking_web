@@ -167,7 +167,7 @@ namespace paper_checking_web.Services
                 var trimmedLine = line.Trim();
                 bool isSectionHeader = sectionPatterns.Any(p => Regex.IsMatch(trimmedLine, p, RegexOptions.IgnoreCase));
 
-                if (isSectionHeader && !string.IsNullOrEmpty(currentContent))
+                if (isSectionHeader && !string.IsNullOrEmpty(currentContent.ToString()))
                 {
                     sections[currentSection] = currentContent.ToString().Trim();
                     currentSection = trimmedLine;
