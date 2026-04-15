@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("paper_checking_web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e677425bce942b063ff05b5552804b4b9f4a0df0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9f0d00c6112df5827d1d44ad6601468565d157de")]
 [assembly: System.Reflection.AssemblyProductAttribute("paper_checking_web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("paper_checking_web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

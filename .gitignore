@@ -2,31 +2,29 @@
 # Build artifacts
 bin/
 obj/
-*.dll
 *.exe
+*.dll
 *.pdb
-*.runtimeconfig.dev.json
+*.nupkg
+*.snupkg
 
 # Dependencies
 packages/
 node_modules/
-.nuget/
 
 # Logs
 *.log
 
-# Environment
+# User-specific files
+.vs/
+.vscode/
+*.userprefs
+
+# Environment specific settings
 .env
 .env.local
-*.env.*
 
-# Editors
-.vscode/
-.idea/
-*.swp
-*.tmp
-
-# OS
+# OS generated files
 .DS_Store
 Thumbs.db
 
@@ -49,18 +47,4 @@ htmlcov/
 *.xz
 *.7z
 *.rar
-*.zst
-*.lz4
-*.lzh
-*.cab
-*.arj
-*.rpm
-*.deb
-*.Z
-*.lz
-*.lzo
-*.tar.gz
-*.tar.bz2
-*.tar.xz
-*.tar.zst
 ```
