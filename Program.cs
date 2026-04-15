@@ -57,7 +57,14 @@ app.UseHttpsRedirection();
 app.UseCors();
 app.UseAuthorization();
 
+// 启用静态文件服务
+app.UseStaticFiles();
+
 app.MapControllers();
+
+// 映射根路径到 index.html
+app.MapGet("/", () => Results.Redirect("/index.html"));
+app.MapStaticAssets();
 
 // 确保数据目录存在
 EnsureDataDirectories();
