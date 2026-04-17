@@ -1,435 +1,62 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>论文查重系统</title>
-    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Microsoft YaHei', sans-serif;
-            background: #f5f7fa;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header {
-            background: #409EFF;
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-            .header h1 {
-                font-size: 24px;
-            }
-
-        .main-card {
-            background: white;
-            border-radius: 8px;
-            padding: 30px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-        }
-
-        .upload-area {
-            border: 2px dashed #dcdfe6;
-            border-radius: 8px;
-            padding: 40px;
-            text-align: center;
-            margin: 20px 0;
-        }
-
-            .upload-area.dragover {
-                border-color: #409EFF;
-                background: #ecf5ff;
-            }
-
-        .progress-section {
-            margin: 20px 0;
-        }
-
-        .result-section {
-            margin-top: 30px;
-        }
-
-        .similarity-gauge {
-            text-align: center;
-            padding: 30px;
-        }
-
-        .similarity-value {
-            font-size: 48px;
-            font-weight: bold;
-        }
-
-            .similarity-value.pass {
-                color: #67C23A;
-            }
-
-            .similarity-value.fail {
-                color: #F56C6C;
-            }
-
-        .section-list {
-            margin-top: 20px;
-        }
-
-        .section-item {
-            background: #f5f7fa;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 4px;
-        }
-
-        .toolbar {
-            margin: 20px 0;
-            display: flex;
-            gap: 10px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>论文查重系统</title>
+<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/element-ui/2.15.14/theme-chalk/index.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Microsoft YaHei',sans-serif;background:#f5f7fa}.container{max-width:1400px;margin:0 auto;padding:20px}.header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:30px;border-radius:10px;margin-bottom:20px}.header h1{font-size:28px;margin-bottom:10px}.main-card{background:white;border-radius:10px;padding:30px;box-shadow:0 4px 16px rgba(0,0,0,0.1)}.section-title{font-size:18px;font-weight:bold;margin:20px 0 15px 0;color:#303133;border-left:4px solid #409EFF;padding-left:12px}.form-row{display:flex;gap:20px;margin-bottom:20px;align-items:center}.form-row label{width:140px;text-align:right;color:#606266}.input-wrapper{flex:1;display:flex;gap:10px}.toolbar{margin:25px 0;display:flex;gap:12px;flex-wrap:wrap}.progress-section{margin:25px 0;padding:20px;background:#f8f9fa;border-radius:8px}.result-section{margin-top:30px}.similarity-gauge{text-align:center;padding:40px;background:linear-gradient(135deg,#f5f7fa 0%,#e4e9f2 100%);border-radius:10px;margin:20px 0}.similarity-value{font-size:56px;font-weight:bold}.similarity-value.pass{color:#67C23A}.similarity-value.fail{color:#F56C6C}.section-item{background:#f8f9fa;padding:18px;margin:12px 0;border-radius:6px;border-left:4px solid #ddd}.section-item.high-risk{border-left-color:#F56C6C}.section-item.medium-risk{border-left-color:#E6A23C}.section-item.low-risk{border-left-color:#67C23A}.settings-panel{background:#f8f9fa;padding:20px;border-radius:8px;margin:20px 0}.keyword-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.keyword-tag{background:#ecf5ff;color:#409EFF;padding:4px 12px;border-radius:15px;font-size:13px;display:flex;align-items:center;gap:6px}.keyword-tag i{cursor:pointer}.stats-table{width:100%;border-collapse:collapse;margin:15px 0}.stats-table th,.stats-table td{padding:10px;text-align:left;border-bottom:1px solid #ebeef5}.stats-table th{background:#fafafa;font-weight:600}.mode-description{font-size:13px;color:#909399;margin-top:8px;line-height:1.6}.checkbox-group{display:flex;gap:20px}
+</style>
 </head>
 <body>
-    <div id="app">
-        <div class="container">
-            <div class="header">
-                <h1>📝 论文查重系统</h1>
-                <p>专业、准确、高效的论文检测服务</p>
-            </div>
-
-            <div class="main-card">
-                <!-- 步骤 1: 选择查重模式 -->
-                <div v-if="currentStep === 1">
-                    <h3>请选择查重模式：</h3>
-                    <el-radio-group v-model="checkMode" size="large" style="margin: 20px 0;">
-                        <el-radio-button label="vertical">纵向模式</el-radio-button>
-                        <el-radio-button label="horizontal">横向模式</el-radio-button>
-                    </el-radio-group>
-                    <div style="margin: 20px 0;">
-                        <el-alert v-if="checkMode === 'vertical'"
-                                  title="纵向查重：将指定路径的文件与比对库中的文件进行比对，检查是否复制了比对库中的文本。"
-                                  type="info"
-                                  show-icon
-                                  :closable="false" />
-                        <el-alert v-else-if="checkMode === 'horizontal'"
-                                  title="横向查重：在指定路径的多个文件之间进行互相比对，检查文件之间是否存在互相复制的情况。"
-                                  type="warning"
-                                  show-icon
-                                  :closable="false" />
-                    </div>
-                    <div class="toolbar">
-                        <el-button type="primary" size="large" @click="goToStep2" :disabled="!checkMode">下一步</el-button>
-                    </div>
-                </div>
-
-                <!-- 步骤 2: 输入三个路径 -->
-                <div v-if="currentStep === 2">
-                    <h3>请配置路径信息（当前模式：{{ checkMode === 'vertical' ? '纵向模式' : '横向模式' }}）：</h3>
-
-                    <!-- 路径 1: 被查重路径 -->
-                    <div style="margin: 20px 0;">
-                        <el-form-item label="被查重路径：" label-width="120px">
-                            <el-input v-model="paths.toCheckPath"
-                                      placeholder="请输入要被查重的文件/文件夹路径"
-                                      clearable>
-                                <template #append>
-                                    <el-button @click="selectPath('toCheckPath')">选择路径</el-button>
-                                </template>
-                            </el-input>
-                            <div style="font-size: 12px; color: #909399; margin-top: 5px;">
-                                {{ checkMode === 'vertical' ? '单个论文文件或包含多篇论文的文件夹' : '包含多篇论文的文件夹' }}
-                            </div>
-                        </el-form-item>
-                    </div>
-
-                    <!-- 路径 2: 比对库路径 -->
-                    <div style="margin: 20px 0;">
-                        <el-form-item label="比对库路径：" label-width="120px">
-                            <el-input v-model="paths.compareLibraryPath"
-                                      placeholder="请输入比对库文件/文件夹路径"
-                                      clearable>
-                                <template #append>
-                                    <el-button @click="selectPath('compareLibraryPath')">选择路径</el-button>
-                                </template>
-                            </el-input>
-                            <div style="font-size: 12px; color: #909399; margin-top: 5px;">
-                                {{ checkMode === 'vertical' ? '参考论文库文件夹' : '同一课题组的论文文件夹进行互相比对' }}
-                            </div>
-                        </el-form-item>
-                    </div>
-
-                    <!-- 路径 3: 结果存放路径 -->
-                    <div style="margin: 20px 0;">
-                        <el-form-item label="结果存放路径：" label-width="120px">
-                            <el-input v-model="paths.resultPath"
-                                      placeholder="请输入检测结果保存路径"
-                                      clearable>
-                                <template #append>
-                                    <el-button @click="selectPath('resultPath')">选择路径</el-button>
-                                </template>
-                            </el-input>
-                            <div style="font-size: 12px; color: #909399; margin-top: 5px;">
-                                检测报告保存的文件夹路径
-                            </div>
-                        </el-form-item>
-                    </div>
-
-                    <div class="toolbar">
-                        <el-button @click="currentStep = 1">上一步</el-button>
-                        <el-button type="primary" size="large" @click="startCheck" :loading="isChecking" :disabled="!validatePaths()">开始检测</el-button>
-                        <el-button @click="resetForm">重置</el-button>
-                    </div>
-                </div>
-
-                <!-- 进度显示 -->
-                <div v-if="isChecking || progress.percent > 0" class="progress-section">
-                    <h3>检测进度：</h3>
-                    <el-progress :percentage="progress.percent"
-                                 :status="progress.status"
-                                 :format="() => progress.message" />
-                    <p style="margin-top: 10px; color: #909399;">当前阶段：{{ progress.currentStage }}</p>
-                </div>
-
-                <!-- 检测结果 -->
-                <div v-if="checkResult" class="result-section">
-                    <el-divider>检测结果</el-divider>
-
-                    <div class="similarity-gauge">
-                        <div class="similarity-value" :class="checkResult.isPassed ? 'pass' : 'fail'">
-                            {{ checkResult.totalSimilarity }}%
-                        </div>
-                        <p>总文字复制比</p>
-                        <el-tag :type="checkResult.isPassed ? 'success' : 'danger'" size="large">
-                            {{ checkResult.isPassed ? '通过' : '未通过' }}
-                        </el-tag>
-                    </div>
-
-                    <!-- 章节详情 -->
-                    <div class="section-list" v-if="checkResult.details && checkResult.details.length > 0">
-                        <h3>各章节检测结果：</h3>
-                        <div v-for="(detail, index) in checkResult.details" :key="index" class="section-item">
-                            <div style="display: flex; justify-content: space-between;">
-                                <strong>{{ detail.sectionName }}</strong>
-                                <span :style="{ color: getSimilarityColor(detail.similarity) }">
-                                    复制比：{{ detail.similarity }}%
-                                </span>
-                            </div>
-                            <div v-if="detail.matchedSources && detail.matchedSources.length > 0" style="margin-top: 10px; font-size: 13px; color: #606266;">
-                                <div v-for="(source, sIndex) in detail.matchedSources" :key="sIndex">
-                                    • {{ source.sourceName }} ({{ source.similarity }}%)
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 操作按钮 -->
-                    <div class="toolbar">
-                        <el-button type="success" @click="downloadReport('rtf')">下载 RTF 报告</el-button>
-                        <el-button type="warning" @click="downloadReport('pdf')">下载 PDF 报告</el-button>
-                        <el-button type="primary" @click="downloadReport('docx')">下载 Word 报告</el-button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <script src="https://unpkg.com/element-plus"></script>
-    <script src="https://unpkg.com/@element-plus/icons-vue"></script>
-    <script>
-        const { createApp, ref, reactive, onMounted, onUnmounted } = Vue;
-        const { ElMessage } = ElementPlus;
-
-        const app = createApp({
-            setup() {
-                const checkMode = ref('vertical'); // vertical: 纵向查重，horizontal: 横向查重
-                const selectedFiles = ref([]);
-                const compareLibraryPath = ref('');
-                const isChecking = ref(false);
-                const progress = reactive({ percent: 0, status: '', message: '', currentStage: '' });
-                const checkResult = ref(null);
-                const socket = ref(null);
-                const currentTaskId = ref('');
-
-                const API_BASE = window.location.origin;
-
-                // 处理文件选择
-                const handleFileChange = (file) => {
-                    if (file.raw) {
-                        // 单个文件
-                        selectedFiles.value = [file.raw];
-                    } else if (file.fileList) {
-                        // 多个文件
-                        selectedFiles.value = file.fileList.map(f => f.raw);
-                    }
-                };
-
-                // 选择比对库路径（简化版本，用户手动输入）
-                const selectLibraryPath = () => {
-                    ElMessage.info('请在输入框中直接输入本地比对库文件夹路径，例如：D:\\ComparisonLibrary');
-                };
-
-                // 开始检测
-                const startCheck = async () => {
-                    if (selectedFiles.value.length === 0) {
-                        ElMessage.warning('请先选择文件');
-                        return;
-                    }
-
-                    if (checkMode.value === 'vertical' && !compareLibraryPath.value.trim()) {
-                        ElMessage.warning('纵向查重请选择比对库路径');
-                        return;
-                    }
-
-                    isChecking.value = true;
-                    progress.percent = 0;
-                    progress.currentStage = '准备中...';
-                    checkResult.value = null;
-
-                    try {
-                        // 上传文件
-                        const formData = new FormData();
-                        selectedFiles.value.forEach(file => {
-                            formData.append('files', file);
-                        });
-                        formData.append('checkMode', checkMode.value);
-                        if (checkMode.value === 'vertical') {
-                            formData.append('compareLibraryPath', compareLibraryPath.value);
-                        }
-
-                        const uploadRes = await fetch(`${API_BASE}/api/check/upload`, {
-                            method: 'POST',
-                            body: formData
-                        });
-
-                        if (!uploadRes.ok) throw new Error('上传失败');
-
-                        const uploadResult = await uploadRes.json();
-                        currentTaskId.value = uploadResult.taskId;
-
-                        // 连接 SignalR
-                        connectSignalR(currentTaskId.value);
-
-                        // 提交检测任务
-                        const submitRes = await fetch(`${API_BASE}/api/check/submit`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                taskId: currentTaskId.value,
-                                fileNames: selectedFiles.value.map(f => f.name),
-                                filePaths: uploadResult.filePaths || [uploadResult.filePath],
-                                checkMode: checkMode.value,
-                                compareLibraryPath: checkMode.value === 'vertical' ? compareLibraryPath.value : null
-                            })
-                        });
-
-                        if (!submitRes.ok) throw new Error('提交任务失败');
-
-                        ElMessage.success('任务已提交，正在检测中...');
-
-                    } catch (error) {
-                        ElMessage.error(error.message);
-                        isChecking.value = false;
-                    }
-                };
-
-                // 连接 SignalR
-                const connectSignalR = (taskId) => {
-                    // 简单轮询实现（生产环境应使用真正的 SignalR 客户端）
-                    const pollInterval = setInterval(async () => {
-                        try {
-                            const res = await fetch(`${API_BASE}/api/check/status/${taskId}`);
-                            if (res.ok) {
-                                const status = await res.json();
-                                if (status.progress) {
-                                    progress.percent = status.progress.percent;
-                                    progress.currentStage = status.progress.currentStage;
-                                    progress.message = status.progress.message;
-
-                                    if (status.isCompleted) {
-                                        clearInterval(pollInterval);
-                                        isChecking.value = false;
-
-                                        if (status.isSuccess) {
-                                            const resultRes = await fetch(`${API_BASE}/api/check/result/${taskId}`);
-                                            checkResult.value = await resultRes.json();
-                                            ElMessage.success('检测完成！');
-                                        } else {
-                                            ElMessage.error(status.errorMessage || '检测失败');
-                                        }
-                                    }
-                                }
-                            }
-                        } catch (e) {
-                            console.error('轮询失败:', e);
-                        }
-                    }, 2000);
-                };
-
-                // 下载报告
-                const downloadReport = async (format) => {
-                    if (!checkResult.value) return;
-
-                    const url = `${API_BASE}/api/check/report/${currentTaskId.value}?format=${format}`;
-                    window.open(url, '_blank');
-                    ElMessage.success(`正在下载${format.toUpperCase()}报告...`);
-                };
-
-                // 获取相似度颜色
-                const getSimilarityColor = (similarity) => {
-                    if (similarity < 10) return '#67C23A';
-                    if (similarity < 30) return '#E6A23C';
-                    return '#F56C6C';
-                };
-
-                onMounted(() => {
-                    // 不需要加载比对源列表
-                });
-
-                // 重置表单
-                const resetForm = () => {
-                    checkMode.value = 'vertical';
-                    selectedFiles.value = [];
-                    compareLibraryPath.value = '';
-                    progress.percent = 0;
-                    progress.message = '';
-                    progress.currentStage = '';
-                    checkResult.value = null;
-                    currentTaskId.value = '';
-                };
-
-                return {
-                    checkMode,
-                    selectedFiles,
-                    compareLibraryPath,
-                    isChecking,
-                    progress,
-                    checkResult,
-                    handleFileChange,
-                    selectLibraryPath,
-                    startCheck,
-                    downloadReport,
-                    resetForm,
-                    getSimilarityColor
-                };
-            }
-        });
-
-        app.use(ElementPlus);
-        for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-            app.component(key, component);
-        }
-        app.mount('#app');
-    </script>
+<div class="container">
+<div class="header"><h1>📝 论文查重系统</h1><p>专业、准确、高效的论文检测服务 - 支持纵向查重和横向查重</p></div>
+<div class="main-card">
+<div class="section-title">查重模式</div>
+<div class="form-row"><label>查重方式：</label><div class="input-wrapper"><label style="text-align:left;width:auto;"><input type="radio" name="checkMode" value="vertical" checked> 纵向查重</label><label style="text-align:left;width:auto;margin-left:20px;"><input type="radio" name="checkMode" value="horizontal"> 横向查重</label></div></div>
+<div id="modeDesc" class="mode-description"><strong>纵向查重：</strong>将待查文件与比对库中的文件进行比对，检查是否复制了比对库中的文本。</div>
+<div class="section-title">路径配置</div>
+<div class="form-row"><label>待查文件路径：</label><div class="input-wrapper"><input type="text" id="toCheckPath" class="el-input" placeholder="请输入待查文件/文件夹路径"><button class="el-button el-button--primary" onclick="selectPath()">浏览</button></div></div>
+<div class="form-row"><label>比对库路径：</label><div class="input-wrapper"><input type="text" id="compareLibraryPath" class="el-input" placeholder="请输入比对库路径"><button class="el-button el-button--primary" onclick="selectPath()">浏览</button><button class="el-button el-button--success" id="addToLibraryBtn" onclick="addToLibrary()">添加到比对库</button></div></div>
+<div class="form-row"><label>报告保存路径：</label><div class="input-wrapper"><input type="text" id="reportPath" class="el-input" placeholder="请输入报告保存路径"><button class="el-button el-button--primary" onclick="selectPath()">浏览</button></div></div>
+<div class="section-title">查重参数</div>
+<div class="settings-panel">
+<div class="form-row"><label>查重阈值：</label><div class="input-wrapper" style="max-width:300px"><input type="number" id="threshold" class="el-input" value="13" min="1" max="99"><span style="padding:0 10px;line-height:38px">字</span></div><span style="color:#909399;font-size:13px">推荐值：10-16</span></div>
+<div class="form-row"><label>查重进程数：</label><div class="input-wrapper" style="max-width:200px"><input type="number" id="checkThreads" class="el-input" value="4" min="1" max="32"></div></div>
+<div class="form-row"><label>格式转换线程：</label><div class="input-wrapper" style="max-width:200px"><input type="number" id="convertThreads" class="el-input" value="4" min="1" max="32"></div></div>
+<div class="form-row"><label style="width:auto">选项：</label><div class="checkbox-group"><label><input type="checkbox" id="generateStats" checked> 生成统计表 (CSV)</label><label><input type="checkbox" id="recoverTask"> 中断恢复</label></div></div>
+</div>
+<div class="section-title">关键词过滤</div>
+<div class="settings-panel">
+<div class="form-row"><label>添加关键词：</label><div class="input-wrapper"><input type="text" id="keywordInput" class="el-input" placeholder="输入关键词后按回车" onkeypress="if(event.keyCode===13)addKeyword()"><button class="el-button el-button--primary" onclick="addKeyword()">添加</button></div></div>
+<div id="keywordTags" class="keyword-tags"></div>
+</div>
+<div class="toolbar"><button class="el-button el-button--primary el-button--large" id="startCheckBtn" onclick="startCheck()">开始查重</button><button class="el-button el-button--danger el-button--large" id="stopCheckBtn" onclick="stopCheck()" disabled>停止查重</button><button class="el-button el-button--success el-button--large" onclick="exportReports()">导出报告</button><button class="el-button el-button--warning el-button--large" onclick="resetSystem()">重置系统</button></div>
+<div id="progressSection" class="progress-section" style="display:none"><div class="section-title">查重进度</div><div id="progressBar" style="margin:15px 0"></div><div style="display:flex;justify-content:space-between;margin-top:15px"><div>当前阶段：<span id="currentStage" style="color:#409EFF;font-weight:600">准备中</span></div><div>已处理：<span id="processedCount">0</span>/<span id="totalCount">0</span> 文件</div></div><div id="progressMessage" style="margin-top:10px;color:#606266"></div></div>
+<div id="resultSection" class="result-section" style="display:none"><div class="section-title">检测结果</div><div class="similarity-gauge"><div id="totalSimilarity" class="similarity-value pass">0.0%</div><p style="margin:10px 0;color:#606266">总文字复制比</p><span id="checkResult" class="el-tag el-tag--success el-tag--large">通过</span></div><table class="stats-table"><tr><th>统计项</th><th>数值</th></tr><tr><td>总字符数</td><td id="totalChars">0</td></tr><tr><td>章节总数</td><td id="totalSections">0</td></tr><tr><td>重复章节数</td><td id="matchedSections">0</td></tr><tr><td>最高相似度</td><td id="maxSimilarity">0.0%</td></tr><tr><td>最低相似度</td><td id="minSimilarity">0.0%</td></tr></table><div class="section-title">各章节检测结果</div><div id="sectionList" class="section-list"></div><div class="toolbar"><button class="el-button el-button--success" onclick="downloadReport('rtf')">下载 RTF 报告</button><button class="el-button el-button--warning" onclick="downloadReport('pdf')">下载 PDF 报告</button><button class="el-button el-button--primary" onclick="downloadReport('docx')">下载 Word 报告</button><button class="el-button" onclick="viewReports()">查看历史报告</button></div></div>
+</div>
+</div>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/element-ui/2.15.14/index.js"></script>
+<script>
+const API_BASE=window.location.origin;let currentTaskIdVal='',pollIntervalVal=null,keywordsArr=[];
+$(document).ready(function(){loadSystemSettings();$('input[name="checkMode"]').change(function(){const m=$(this).val();$('#modeDesc').html(m==='vertical'?'<strong>纵向查重：</strong>将待查文件与比对库中的文件进行比对，检查是否复制了比对库中的文本。':'<strong>横向查重：</strong>在待查文件之间进行互相比对，检查文件之间是否存在互相复制的情况。')});$('#progressBar').html('<div class="el-progress"><div class="el-progress__bar"><div class="el-progress__inner" style="width:0%"></div></div><div class="el-progress__text">0%</div></div>')});
+function loadSystemSettings(){$.ajax({url:API_BASE+'/api/check/settings',method:'GET',success:function(d){if(d.checkThreadCnt)$('#checkThreads').val(d.checkThreadCnt);if(d.convertThreadCnt)$('#convertThreads').val(d.convertThreadCnt)}})}
+function selectPath(){ELEMENT.Message.info('请在输入框中手动输入路径，例如：D:\\Papers')}
+function addToLibrary(){const p=$('#compareLibraryPath').val().trim();if(!p){ELEMENT.Message.warning('请先输入比对库路径');return;}$('#addToLibraryBtn').prop('disabled',true).text('添加中...');$.ajax({url:API_BASE+'/api/check/library/add',method:'POST',contentType:'application/json',data:JSON.stringify({sourcePath:p}),success:function(){ELEMENT.Message.success('论文添加任务已启动');setTimeout(function(){$('#addToLibraryBtn').prop('disabled',false).text('添加到比对库')},3000)},error:function(){$('#addToLibraryBtn').prop('disabled',false).text('添加到比对库');ELEMENT.Message.error('添加失败')}})}
+function addKeyword(){const k=$('#keywordInput').val().trim();if(!k)return;if(keywordsArr.indexOf(k)>=0){ELEMENT.Message.warning('该关键词已存在');return;}keywordsArr.push(k);renderKeywords();$('#keywordInput').val('')}
+function removeKeyword(k){keywordsArr=keywordsArr.filter(function(x){return x!==k});renderKeywords()}
+function renderKeywords(){$('#keywordTags').html(keywordsArr.map(function(k){return '<span class="keyword-tag">'+k+'<i onclick="removeKeyword(\''+k+'\')">x</i></span>'}).join(''))}
+function startCheck(){const toCheck=$('#toCheckPath').val().trim(),lib=$('#compareLibraryPath').val().trim(),report=$('#reportPath').val().trim(),mode=$('input[name="checkMode"]:checked').val(),threshold=parseInt($('#threshold').val())||13;if(!toCheck){ELEMENT.Message.warning('请输入待查文件路径');return;}if(mode==='vertical'&&!lib){ELEMENT.Message.warning('纵向查重需要输入比对库路径');return;}if(!report){ELEMENT.Message.warning('请输入报告保存路径');return;}if(threshold<1||threshold>99){ELEMENT.Message.warning('查重阈值必须在 1-99 之间');return;}$('#startCheckBtn').prop('disabled',true);$('#stopCheckBtn').prop('disabled',false);$('#progressSection').show();$('#resultSection').hide();$.ajax({url:API_BASE+'/api/check/start',method:'POST',contentType:'application/json',data:JSON.stringify({checkWay:mode==='vertical'?0:1,checkThreshold:threshold,recover:$('#recoverTask').is(':checked'),toCheckPaperPath:toCheck,finalReportPath:report,compareLibraryPath:mode==='vertical'?lib:'',blocklist:keywordsArr.join(','),statisTable:$('#generateStats').is(':checked')}),success:function(d){currentTaskIdVal=d.taskId;ELEMENT.Message.success('查重任务已启动');pollProgress(currentTaskIdVal)},error:function(){$('#startCheckBtn').prop('disabled',false);$('#stopCheckBtn').prop('disabled',true);ELEMENT.Message.error('启动任务失败')}})}
+function pollProgress(taskId){pollIntervalVal=setInterval(function(){$.ajax({url:API_BASE+'/api/check/progress/'+taskId,method:'GET',success:function(d){const p=d.progressPercent||d.percent||0;$('#progressBar').html('<div class="el-progress"><div class="el-progress__bar"><div class="el-progress__inner" style="width:'+p+'%"></div></div><div class="el-progress__text">'+p+'%</div></div>');$('#currentStage').text(d.currentStage||'处理中');$('#progressMessage').text(d.message||'');$('#processedCount').text(d.checkedFiles||0);$('#totalCount').text(d.totalFiles||0);if(p>=100||d.status==='completed'){clearInterval(pollIntervalVal);$('#startCheckBtn').prop('disabled',false);$('#stopCheckBtn').prop('disabled',true);loadResult(taskId)}}})},2000)}
+function loadResult(taskId){$.ajax({url:API_BASE+'/api/check/reports/'+taskId,method:'GET',success:function(d){displayResult(d)},error:function(){displayResult({totalSimilarity:0,isPassed:true,statistics:{},details:[]})}})}
+function displayResult(r){$('#resultSection').show();const sim=r.totalSimilarity||0,pass=r.isPassed!==false;$('#totalSimilarity').text(sim.toFixed(1)+'%').removeClass('pass fail').addClass(pass?'pass':'fail');$('#checkResult').text(pass?'通过':'未通过').attr('class','el-tag el-tag--'+(pass?'success':'danger')+' el-tag--large');if(r.statistics){$('#totalChars').text(r.statistics.totalCharacters||0);$('#totalSections').text(r.statistics.totalSections||0);$('#matchedSections').text(r.statistics.matchedSections||0);$('#maxSimilarity').text((r.statistics.maxSimilarity||0).toFixed(1)+'%');$('#minSimilarity').text((r.statistics.minSimilarity||0).toFixed(1)+'%')}const html=(r.details||[]).map(function(d){const cls=d.similarity>30?'high-risk':(d.similarity>10?'medium-risk':'low-risk');const src=(d.matchedSources||[]).map(function(s){return '- '+s.sourceName+' ('+s.similarity.toFixed(1)+'%)'}).join('<br>');return '<div class="section-item '+cls+'"><div style="display:flex;justify-content:space-between"><strong>'+d.sectionName+'</strong><span style="color:'+(d.similarity>30?'#F56C6C':(d.similarity>10?'#E6A23C':'#67C23A'))+'">复制比：'+d.similarity.toFixed(1)+'%</span></div>'+(src?'<div style="margin-top:8px;font-size:13px;color:#606266">'+src+'</div>':'')+'</div>'}).join('');$('#sectionList').html(html||'<div style="color:#909399;padding:20px;text-align:center">暂无章节详情数据</div>')}
+function stopCheck(){if(!currentTaskIdVal)return;$.ajax({url:API_BASE+'/api/check/stop/'+currentTaskIdVal,method:'POST',success:function(){clearInterval(pollIntervalVal);$('#startCheckBtn').prop('disabled',false);$('#stopCheckBtn').prop('disabled',true);ELEMENT.Message.info('查重已停止')}})}
+function downloadReport(fmt){if(!currentTaskIdVal){ELEMENT.Message.warning('请先执行查重');return;}window.open(API_BASE+'/api/check/reports/'+currentTaskIdVal+'?format='+fmt,'_blank');ELEMENT.Message.success('正在下载'+fmt.toUpperCase()+'报告...')}
+function exportReports(){const p=$('#reportPath').val().trim();if(!p){ELEMENT.Message.warning('请先设置报告保存路径');return;}$.ajax({url:API_BASE+'/api/check/export',method:'POST',contentType:'application/json',data:JSON.stringify({exportPath:p,includeStatisTable:$('#generateStats').is(':checked')}),success:function(){ELEMENT.Message.success('报告导出完成')}})}
+function viewReports(){$.ajax({url:API_BASE+'/api/check/reports',method:'GET',success:function(d){if(d.length===0){ELEMENT.Message.info('暂无历史报告');return;}const list=d.map(function(r){return '<div style="padding:6px 10px;margin:4px 0;background:#f5f7fa;border-radius:4px;font-size:13px">'+r.paperName+' - '+r.similarityRate.toFixed(1)+'%</div>'}).join('');ELEMENT.alert({title:'历史报告列表',dangerouslyUseHTMLString:true,message:'<div style="max-height:200px;overflow-y:auto;border:1px solid #ebeef5;border-radius:4px;padding:10px">'+list+'</div>',confirmButtonText:'关闭'})}})}
+function resetSystem(){ELEMENT.confirm('确定要重置系统吗？','提示',{confirmButtonText:'确定',cancelButtonText:'取消',type:'warning'}).then(function(){$.ajax({url:API_BASE+'/api/check/reset',method:'POST',success:function(){ELEMENT.Message.success('系统已重置');location.reload()}})})}
+</script>
 </body>
 </html>

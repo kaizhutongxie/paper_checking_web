@@ -2,49 +2,82 @@
 # Build artifacts
 bin/
 obj/
-*.exe
 *.dll
+*.exe
 *.pdb
-*.nupkg
-*.snupkg
+*.so
+*.dylib
+*.jar
+*.war
+*.class
+*.o
+*.obj
+*.out
 
 # Dependencies
-packages/
 node_modules/
+packages/
 
 # Logs
 *.log
 
-# User-specific files
-.vs/
-.vscode/
-*.userprefs
-
-# Environment specific settings
+# Environment
 .env
 .env.local
+*.env.*
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
 
 # OS generated files
 .DS_Store
 Thumbs.db
 
-# Database
-*.db
-*.sqlite
-*.sqlite3
-
-# Coverage
+# Coverage reports
 coverage/
 htmlcov/
 *.coverage
 
-# Compressed
+# Distribution / packaging
+dist/
+build/
+*.tar.gz
 *.zip
-*.gz
-*.tar
-*.tgz
-*.bz2
-*.xz
-*.7z
-*.rar
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.git/modules/
+*.tmproj
+nbproject/
+*.orig
+*~
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Icon?
+iTunes_Control/
+Thumbs.db
+Windows/
 ```
