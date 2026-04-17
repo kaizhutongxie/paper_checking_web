@@ -7,12 +7,12 @@
       "RelativeMoniker": "D:0:0:{67AB688E-BFB7-77E4-8DA1-C8056366CFD5}|paper_checking_web.csproj|solutionrelative:wwwroot\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{67AB688E-BFB7-77E4-8DA1-C8056366CFD5}|paper_checking_web.csproj|e:\\gitee\\paper_checking_web\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{67AB688E-BFB7-77E4-8DA1-C8056366CFD5}|paper_checking_web.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{67AB688E-BFB7-77E4-8DA1-C8056366CFD5}|paper_checking_web.csproj|e:\\gitee\\paper_checking_web\\clientapp\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{67AB688E-BFB7-77E4-8DA1-C8056366CFD5}|paper_checking_web.csproj|solutionrelative:clientapp\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{67AB688E-BFB7-77E4-8DA1-C8056366CFD5}|paper_checking_web.csproj|e:\\gitee\\paper_checking_web\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{67AB688E-BFB7-77E4-8DA1-C8056366CFD5}|paper_checking_web.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{67AB688E-BFB7-77E4-8DA1-C8056366CFD5}|paper_checking_web.csproj|e:\\gitee\\paper_checking_web\\services\\papercheckservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -68,14 +68,14 @@
               "RelativeDocumentMoniker": "wwwroot\\index.html",
               "ToolTip": "E:\\gitee\\paper_checking_web\\wwwroot\\index.html",
               "RelativeToolTip": "wwwroot\\index.html",
-              "ViewState": "AgIAAKsAAAAAAAAAAAAAALoAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAJYAAAAAAAAAAAAAAKYAAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
               "WhenOpened": "2026-04-15T06:04:52.295Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "Program.cs",
               "DocumentMoniker": "E:\\gitee\\paper_checking_web\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
@@ -87,13 +87,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "index.html",
               "DocumentMoniker": "E:\\gitee\\paper_checking_web\\ClientApp\\index.html",
               "RelativeDocumentMoniker": "ClientApp\\index.html",
               "ToolTip": "E:\\gitee\\paper_checking_web\\ClientApp\\index.html",
               "RelativeToolTip": "ClientApp\\index.html",
-              "ViewState": "AgIAACYBAAAAAAAAAAAAACoBAAAlAAAAAAAAAA==",
+              "ViewState": "AgIAAMcAAAAAAAAAAAAhwMQAAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
               "WhenOpened": "2026-04-15T05:58:44.325Z"
             },

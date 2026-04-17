@@ -154,6 +154,54 @@
         }
       }
     },
+    "/api/Check/select-path": {
+      "post": {
+        "tags": [
+          "Check"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SelectPathRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SelectPathRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SelectPathRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SelectPathResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SelectPathResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SelectPathResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Check/start": {
       "post": {
         "tags": [
@@ -526,6 +574,10 @@
           "finalReportPath": {
             "type": "string",
             "nullable": true
+          },
+          "compareLibraryPath": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -605,6 +657,30 @@
           "checkTime": {
             "type": "string",
             "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SelectPathRequest": {
+        "type": "object",
+        "properties": {
+          "pathKey": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SelectPathResponse": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
