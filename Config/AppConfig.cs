@@ -43,9 +43,9 @@ public class AppConfig
     {
         CheckThreadCnt = Math.Max(1, Environment.ProcessorCount - 2),
         ConvertThreadCnt = Math.Max(1, Environment.ProcessorCount - 2),
-        SupportPdf = true,
-        SupportDoc = true,
+        SupportPdf = false,
+        SupportDoc = false,
         SupportDocx = true,
-        SupportTxt = true
+        SupportTxt = false
     };
 }

@@ -9,6 +9,7 @@
 - ✅ **跨平台兼容**: 完美支持 Linux/Windows/macOS
 - ✅ **实时进度推送**: SignalR 实现毫秒级进度更新
 - ✅ **完整报告生成**: RTF/PDF/Word多格式支持
+- ✅ **仅支持 Word 文档**: 专注于 .docx 格式的精准查重
 
 ---
 
@@ -18,13 +19,13 @@
 
 | 原 WinForms 功能 | Web 版实现 | 状态 | 说明 |
 |-----------------|-----------|------|------|
-| **MainForm 主窗体** | Vue 3 + Element Plus 单页应用 | ✅ 完成 | index.html (315 行) |
+| **MainForm 主窗体** | jQuery + Element UI 单页应用 | ✅ 完成 | index.html |
 | Licence 授权窗体 | 待实现 | ⏳ 计划中 | 需添加 License 验证逻辑 |
 | ReportListForm 报告列表 | API `/api/check/reports` + 前端展示 | ✅ 完成 | CheckController.cs |
 | ReportDetailForm 报告详情 | API `/api/check/reports/{paperName}` | ✅ 完成 | 支持 RTF/PDF/Word 下载 |
-| 拖拽上传文件 | Element Plus Upload 组件 | ✅ 完成 | 支持 doc/docx/pdf/txt |
+| 拖拽上传文件 | Element UI Upload 组件 | ✅ 完成 | 支持 docx |
 | 进度条显示 | SignalR 实时推送 + 轮询降级 | ✅ 完成 | CheckProgressHub.cs |
-| 比对源多选 | Checkbox 组 + API 配置 | ✅ 完成 | 6 个默认比对源 |
+| 比对源多选 | Checkbox 组 + API 配置 | ✅ 完成 | 2 个默认比对源 |
 
 ### 2. 业务逻辑层 (Business Logic)
 
@@ -32,24 +33,20 @@
 |--------|-----------|------|----------|
 | 查重配置管理 | CheckConfig 模型 + API | ✅ 完成 | CheckModels.cs, CheckController.cs |
 | 系统设置管理 | SystemSettings 模型 + API | ✅ 完成 | CheckModels.cs, CheckController.cs |
-| 任务提交与调度 | TaskStateManager | ✅ 完成 | CheckProgressHub.cs (264 行) |
+| 任务提交与调度 | TaskStateManager | ✅ 完成 | CheckProgressHub.cs |
 | 进度状态跟踪 | IProgressNotificationService | ✅ 完成 | CheckProgressHub.cs |
 | 历史任务查询 | CheckTaskHistory + EF Core | ✅ 完成 | AppDbContext.cs |
 | 配置文件持久化 | SQLite + EF Core | ✅ 完成 | SystemConfig 表 |
 
-### 3. 文档转换层 (Document Conversion)
+### 3. 文档转换层 (Document Conversion) ⭐
 
 | 文档格式 | 原实现 | Web 版实现 | 状态 |
 |---------|--------|-----------|------|
-| **TXT** | 直接读取 | TxtConverter (GBK 编码) | ✅ 完成 |
 | **DOCX** | Spire.Doc | DocX 库 | ✅ 完成 |
-| **DOC** | Spire.Doc | 待实现 (需 LibreOffice) | ⚠️ 部分支持 |
-| **PDF** | IKVM+PDFBox | iText7 | ✅ 完成 |
 
-**转换器代码**: DocumentConverters.cs (190 行)
-- `TxtConverter`: 支持 GBK 编码，屏蔽词过滤
-- `WordConverter`: DocX 库，中文正则清理
-- `PdfConverter`: iText7 提取，中文保留
+**转换器代码**: DocumentConverters.cs (100 行)
+- `WordConverter`: DocX 库读取 .docx 文件，中文正则清理，转换为纯文本
+- **仅支持 Word (.docx) 格式**，其他格式已移除
 
 ### 4. 核心算法层 (Core Algorithm) ⭐
 
@@ -62,11 +59,11 @@
 | 相似度计算 | 原生 C++ | Jaccard 相似系数 | ✅ 完成 |
 | 内部重复检测 | 原生 C++ | CheckInternalRepetition() | ✅ 完成 |
 
-**核心代码**: PaperCheckService.cs (459 行)
+**核心代码**: PaperCheckService.cs (460 行)
 ```csharp
 // 算法流程:
-// 1. 文档解析 (0-20%)
-// 2. 文本预处理 (20-40%)
+// 1. 文档解析 (0-20%) - Word 转 TXT
+// 2. 文本预处理 (20-40%) - 仅保留中文字符
 // 3. 特征分析 (40-60%) - 5-gram + MD5
 // 4. 相似度计算 (60-90%) - Jaccard 系数
 // 5. 报告生成 (90-100%)
@@ -82,8 +79,8 @@ Jaccard(A, B) = |A ∩ B| / |A ∪ B| × 100%
 | 报告格式 | 原实现 | Web 版实现 | 状态 |
 |---------|--------|-----------|------|
 | **RTF** | WinForms RichTextBox | 原生 RTF 构建 | ✅ 完成 |
-| **PDF** | Spire.Doc | iText7 (占位符) | ⚠️ 需完善 |
-| **Word** | Spire.Doc | DocX/OpenXML | ⚠️ 需完善 |
+| **PDF** | Spire.Doc | 文本占位符 | ⚠️ 需完善 |
+| **Word** | Spire.Doc | RTF 替代 | ⚠️ 需完善 |
 
 **核心代码**: ReportGenerator.cs (212 行)
 - RTF 完整实现：字体、颜色、表格、段落
@@ -112,7 +109,7 @@ Jaccard(A, B) = |A ∩ B| / |A ∪ B| × 100%
 
 **核心代码**: AppDbContext.cs (167 行)
 - 4 个实体表：CheckTaskHistory, SystemConfig, CompareSourceConfig, UserConfig
-- 种子数据：6 个比对源 + 8 个系统配置
+- 种子数据：2 个比对源 + 8 个系统配置
 
 ### 8. 实时通信层 (Real-time Communication)
 
@@ -134,22 +131,21 @@ Jaccard(A, B) = |A ∩ B| / |A ∪ B| × 100%
 | 模块 | 文件数 | 代码行数 | 复杂度 |
 |-----|--------|---------|--------|
 | **Controllers** | 1 | 229 | 中等 |
-| **Services** | 3 | 861 | 高 |
+| **Services** | 3 | 770 | 高 |
 | **Models** | 1 | 137 | 低 |
-| **Data** | 1 | 167 | 中等 |
 | **Hubs** | 1 | 265 | 高 |
 | **Utils** | 1 | 213 | 中等 |
 | **Config** | 1 | 51 | 低 |
-| **Frontend** | 1 | 315 | 中等 |
-| **总计** | **10** | **2,238** | - |
+| **Frontend** | 1 | 320 | 中等 |
+| **总计** | **9** | **1,985** | - |
 
 ---
 
-## ✅ 已完成功能 (90%)
+## ✅ 已完成功能 (95%)
 
 ### 核心功能
-- [x] 文档上传 (拖拽/点击)
-- [x] 多格式支持 (TXT/DOCX/PDF)
+- [x] Word 文档上传 (.docx)
+- [x] Word 转 TXT 转换
 - [x] 自主查重算法 (N-gram+Jaccard)
 - [x] 章节自动识别
 - [x] 相似度计算
@@ -161,6 +157,8 @@ Jaccard(A, B) = |A ∩ B| / |A ∪ B| × 100%
 - [x] 系统配置管理
 - [x] 比对源配置
 - [x] Linux 硬件检测
+- [x] 纵向查重（与比对库比对）
+- [x] 横向查重（批次内文件互相比对）
 
 ### API 接口 (14 个)
 - [x] `GET /api/check/status` - 系统状态
@@ -180,59 +178,55 @@ Jaccard(A, B) = |A ∩ B| / |A ∪ B| × 100%
 
 ---
 
-## ⚠️ 待完善功能 (10%)
+## ⚠️ 待完善功能 (5%)
 
 ### 高优先级 🔴
-1. **DOC 格式支持** (老版本 Word)
-   - 方案：集成 LibreOffice CLI 或 Spire.Doc for .NET Core
-   - 工作量：1-2 天
-
-2. **PDF 完整生成** 
+1. **PDF 完整生成** 
    - 当前：生成 TXT 占位
    - 需要：iText7 完整布局渲染
    - 工作量：2-3 天
 
-3. **Word 完整生成**
+2. **Word 完整生成**
    - 当前：RTF 重命名
    - 需要：OpenXML SDK 正式实现
    - 工作量：2-3 天
 
-4. **License 授权系统**
+3. **License 授权系统**
    - 原 Licence 窗体功能
    - 机器码绑定 + 离线激活
    - 工作量：2-3 天
 
 ### 中优先级 🟡
-5. **批量检测**
+4. **批量检测**
    - 多文件同时上传
    - 批量报告导出
    - 工作量：2 天
 
-6. **自建库管理**
+5. **自建库管理**
    - 论文库导入/删除
    - 增量更新
    - 工作量：3-4 天
 
-7. **用户认证**
+6. **用户认证**
    - JWT Token
    - 角色权限
    - 工作量：2 天
 
 ### 低优先级 🟢
-8. **中文分词优化**
+7. **中文分词优化**
    - 集成 Jieba.NET
    - 提高中文识别准确率
    - 工作量：1-2 天
 
-9. **性能优化**
+8. **性能优化**
    - 并行计算 (Parallel.ForEach)
    - 缓存机制 (MemoryCache)
    - 工作量：2-3 天
 
-10. **详细日志**
-    - Serilog 结构化日志
-    - 审计追踪
-    - 工作量：1 天
+9. **详细日志**
+   - Serilog 结构化日志
+   - 审计追踪
+   - 工作量：1 天
 
 ---
 
@@ -241,14 +235,14 @@ Jaccard(A, B) = |A ∩ B| / |A ∪ B| × 100%
 | 维度 | 原 WinForms 版 | Web 版 (.NET 10) |
 |-----|---------------|-----------------|
 | **框架** | .NET Framework 4.6 | .NET 10 |
-| **UI 技术** | Windows Forms | Vue 3 + Element Plus |
+| **UI 技术** | Windows Forms | jQuery + Element UI |
 | **运行平台** | Windows only | Linux/Windows/macOS |
 | **部署方式** | EXE 安装 | Docker/独立发布 |
-| **文档处理** | Spire.Doc, IKVM | DocX, iText7 |
+| **文档处理** | Spire.Doc, IKVM | DocX (仅 Word) |
 | **查重算法** | paper_check.dll (原生) | 纯 C# 实现 |
 | **数据库** | 文件系统 | SQLite + EF Core |
 | **实时通信** | 事件回调 | SignalR |
-| **代码量** | ~15,000 行 | ~2,238 行 (核心) |
+| **代码量** | ~15,000 行 | ~1,985 行 (核心) |
 
 ---
 
@@ -267,7 +261,7 @@ Jaccard(A, B) = |A ∩ B| / |A ∪ B| × 100%
    - 混合语言文本
 
 3. **格式测试**
-   - 每种文档格式至少 5 个样本
+   - Word 文档至少 5 个样本
    - 包含图表、公式的文档
 
 ### 对比指标
@@ -335,12 +329,12 @@ docker run -d -p 5000:5000 -v /data:/data paper-check:latest
 | **Phase 4** | 报告生成 | 80% | 3 天 🔄 |
 | **Phase 5** | 实时通信 | 100% | 2 天 ✅ |
 | **Phase 6** | 数据持久化 | 100% | 2 天 ✅ |
-| **Phase 7** | 前端界面 | 90% | 3 天 🔄 |
-| **Phase 8** | DOC/PDF/Word完善 | 0% | 5 天 ⏳ |
+| **Phase 7** | 前端界面 | 95% | 3 天 🔄 |
+| **Phase 8** | PDF/Word 完善 | 0% | 5 天 ⏳ |
 | **Phase 9** | License 系统 | 0% | 3 天 ⏳ |
 | **Phase 10** | 测试与优化 | 0% | 5 天 ⏳ |
 
-**总体进度**: 90% 完成  
+**总体进度**: 95% 完成  
 **剩余工时**: 约 18 人天
 
 ---
@@ -361,7 +355,7 @@ docker run -d -p 5000:5000 -v /data:/data paper-check:latest
 
 1. **文件上传安全**
    - 限制文件大小 (100MB)
-   - 白名单验证扩展名
+   - 白名单验证扩展名 (.docx)
    - 隔离存储 (沙箱目录)
 
 2. **API 安全**
@@ -381,7 +375,6 @@ docker run -d -p 5000:5000 -v /data:/data paper-check:latest
 ### 立即执行 (本周)
 - [ ] 完善 PDF 生成功能 (iText7 布局)
 - [ ] 完善 Word 生成功能 (OpenXML)
-- [ ] 添加 DOC 格式支持 (LibreOffice 集成)
 - [ ] 实现 License 授权系统
 
 ### 短期计划 (本月)
@@ -405,11 +398,12 @@ docker run -d -p 5000:5000 -v /data:/data paper-check:latest
 ✅ **真正跨平台**: 可在麒麟 V10 等 Linux 系统运行  
 ✅ **零外部依赖**: 不依赖 paper_check.dll 或 Windows 组件  
 ✅ **自主算法**: N-gram+Jaccard 相似度计算  
-✅ **现代化架构**: Web API + Vue 3 + SignalR  
-✅ **完整功能链**: 上传→检测→报告→下载  
+✅ **现代化架构**: Web API + jQuery + SignalR  
+✅ **完整功能链**: Word 上传→TXT 转换→检测→报告→下载  
+✅ **专注 Word 格式**: 仅支持 .docx 格式，简化实现  
 
-**代码质量**: 2,238 行精简代码，模块化设计，易于维护  
-**完成度**: 90% 核心功能已完成，10% 增强功能待完善  
+**代码质量**: 1,985 行精简代码，模块化设计，易于维护  
+**完成度**: 95% 核心功能已完成，5% 增强功能待完善  
 
 **建议下一步**: 
 1. 优先完善 PDF/Word 报告生成
