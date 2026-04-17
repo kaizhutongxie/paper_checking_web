@@ -17,8 +17,6 @@ builder.Services.AddSwaggerGen(c =>
 
 // 注册文档转换服务
 builder.Services.AddScoped<ConverterFactory>();
-builder.Services.AddScoped<TxtConverter>();
-builder.Services.AddScoped<PdfConverter>();
 builder.Services.AddScoped<WordConverter>();
 
 // 注册核心查重服务
