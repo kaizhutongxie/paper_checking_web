@@ -453,10 +453,8 @@ namespace paper_checking_web.Services
         {
             return Task.FromResult(new List<CompareSource>
             {
-                new CompareSource { Id = 1, Name = "自建参考库", IsEnabled = true },
-                new CompareSource { Id = 2, Name = "互联网资源", IsEnabled = true },
-                new CompareSource { Id = 3, Name = "学术论文库", IsEnabled = false },
-                new CompareSource { Id = 4, Name = "内部重复检测", IsEnabled = true }
+                new CompareSource { Id = 1, Name = "自建参考库 (Word 文档)", IsEnabled = true },
+                new CompareSource { Id = 2, Name = "内部重复检测", IsEnabled = true }
             });
         }
     }

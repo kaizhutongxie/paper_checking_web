@@ -17,9 +17,10 @@
 <div class="form-row"><label>查重方式：</label><div class="input-wrapper"><label style="text-align:left;width:auto;"><input type="radio" name="checkMode" value="vertical" checked> 纵向查重</label><label style="text-align:left;width:auto;margin-left:20px;"><input type="radio" name="checkMode" value="horizontal"> 横向查重</label></div></div>
 <div id="modeDesc" class="mode-description"><strong>纵向查重：</strong>将待查文件与比对库中的文件进行比对，检查是否复制了比对库中的文本。</div>
 <div class="section-title">路径配置</div>
-<div class="form-row"><label>待查文件路径：</label><div class="input-wrapper"><input type="text" id="toCheckPath" class="el-input" placeholder="请输入待查文件/文件夹路径"><button class="el-button el-button--primary" onclick="selectPath()">浏览</button></div></div>
-<div class="form-row"><label>比对库路径：</label><div class="input-wrapper"><input type="text" id="compareLibraryPath" class="el-input" placeholder="请输入比对库路径"><button class="el-button el-button--primary" onclick="selectPath()">浏览</button><button class="el-button el-button--success" id="addToLibraryBtn" onclick="addToLibrary()">添加到比对库</button></div></div>
+<div class="form-row"><label>待查文件路径：</label><div class="input-wrapper"><input type="text" id="toCheckPath" class="el-input" placeholder="请输入待查 Word 文件/文件夹路径 (.docx)"><button class="el-button el-button--primary" onclick="selectPath()">浏览</button></div></div>
+<div class="form-row"><label>比对库路径：</label><div class="input-wrapper"><input type="text" id="compareLibraryPath" class="el-input" placeholder="请输入比对库路径 (.docx 文件)"><button class="el-button el-button--primary" onclick="selectPath()">浏览</button><button class="el-button el-button--success" id="addToLibraryBtn" onclick="addToLibrary()">添加到比对库</button></div></div>
 <div class="form-row"><label>报告保存路径：</label><div class="input-wrapper"><input type="text" id="reportPath" class="el-input" placeholder="请输入报告保存路径"><button class="el-button el-button--primary" onclick="selectPath()">浏览</button></div></div>
+<div style="margin:10px 0;padding:12px;background:#ecf5ff;border-radius:6px;font-size:13px;color:#409EFF">💡 <strong>提示：</strong>本系统仅支持 Word (.docx) 格式文件。Word 文档会自动转换为纯文本进行查重。</div>
 <div class="section-title">查重参数</div>
 <div class="settings-panel">
 <div class="form-row"><label>查重阈值：</label><div class="input-wrapper" style="max-width:300px"><input type="number" id="threshold" class="el-input" value="13" min="1" max="99"><span style="padding:0 10px;line-height:38px">字</span></div><span style="color:#909399;font-size:13px">推荐值：10-16</span></div>

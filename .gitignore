@@ -1,21 +1,10 @@
 ```
-# Build artifacts
+# Build outputs
 bin/
 obj/
-*.dll
-*.exe
-*.pdb
-*.so
-*.dylib
-*.jar
-*.war
-*.class
-*.o
-*.obj
-*.out
+out/
 
 # Dependencies
-node_modules/
 packages/
 
 # Logs
@@ -36,48 +25,32 @@ packages/
 .DS_Store
 Thumbs.db
 
-# Coverage reports
+# Testing
 coverage/
 htmlcov/
 *.coverage
 
-# Distribution / packaging
-dist/
-build/
-*.tar.gz
+# Compressed files
 *.zip
-
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-env/
-venv/
-.venv/
-pip-log.txt
-pip-delete-this-directory.txt
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.log
-.git/modules/
-*.tmproj
-nbproject/
-*.orig
-*~
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Icon?
-iTunes_Control/
-Thumbs.db
-Windows/
+*.gz
+*.tar
+*.tgz
+*.bz2
+*.xz
+*.7z
+*.rar
+*.zst
+*.lz4
+*.lzh
+*.cab
+*.arj
+*.rpm
+*.deb
+*.Z
+*.lz
+*.lzo
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.tar.zst
 ```

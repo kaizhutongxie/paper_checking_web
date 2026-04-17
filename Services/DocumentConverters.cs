@@ -1,16 +1,13 @@
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
-using PdfSharp.Pdf.IO;
-using PdfSharp.Pdf;
-using Xceed.Document.NET;
-using paper_checking_web.Models;
 using Xceed.Words.NET;
+using paper_checking_web.Models;
 
 namespace paper_checking_web.Services;
 
 /// <summary>
-/// 文档转换器接口
+/// 文档转换器接口 - 仅支持 Word 文档
 /// </summary>
 public interface IDocumentConverter
 {
@@ -20,53 +17,8 @@ public interface IDocumentConverter
 }
 
 /// <summary>
-/// 文本文件转换器
-/// </summary>
-public class TxtConverter : IDocumentConverter
-{
-    public bool SupportsExtension(string extension)
-    {
-        return extension.Equals("txt", StringComparison.OrdinalIgnoreCase);
-    }
-
-    public string? ConvertToString(string filePath, string blockText)
-    {
-        try
-        {
-            var text = File.ReadAllText(filePath, Encoding.GetEncoding("GBK"));
-            return TextFormat(text, blockText);
-        }
-        catch
-        {
-            return null;
-        }
-    }
-
-    public async Task<string> ConvertToTextAsync(string filePath)
-    {
-        var result = ConvertToString(filePath, string.Empty);
-        if (result == null)
-            throw new Exception($"无法读取文件：{filePath}");
-        
-        return await Task.FromResult(result);
-    }
-
-    protected string TextFormat(string text, string blockText)
-    {
-        if (string.IsNullOrEmpty(blockText))
-            return text;
-
-        var blocks = blockText.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-        foreach (var block in blocks)
-        {
-            text = text.Replace(block.Trim(), string.Empty);
-        }
-        return text;
-    }
-}
-
-/// <summary>
 /// Word 文档转换器 (使用 DocX)
+/// 将 Word (.docx) 文件转换为纯文本
 /// </summary>
 public class WordConverter : IDocumentConverter
 {
@@ -93,8 +45,9 @@ public class WordConverter : IDocumentConverter
                 return TextFormat(text, blockText);
             }
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine($"Word 转换失败：{ex.Message}");
             return null;
         }
     }
@@ -103,7 +56,7 @@ public class WordConverter : IDocumentConverter
     {
         var result = ConvertToString(filePath, string.Empty);
         if (result == null)
-            throw new Exception($"无法读取文件：{filePath}");
+            throw new Exception($"无法读取 Word 文件：{filePath}");
         
         return await Task.FromResult(result);
     }
@@ -123,102 +76,23 @@ public class WordConverter : IDocumentConverter
 }
 
 /// <summary>
-/// PDF 文档转换器 (使用 PdfSharpCore)
-/// </summary>
-public class PdfConverter : IDocumentConverter
-{
-    public bool SupportsExtension(string extension)
-    {
-        return extension.Equals("pdf", StringComparison.OrdinalIgnoreCase);
-    }
-
-    public string? ConvertToString(string filePath, string blockText)
-    {
-        try
-        {
-            // 使用 PdfSharpCore 读取 PDF 文件
-            var document = PdfReader.Open(filePath, PdfDocumentOpenMode.Import);
-            var text = new StringBuilder();
-            
-            for (int i = 0; i < document.PageCount; i++)
-            {
-                var page = document.Pages[i];
-                // PdfSharpCore 不直接支持文本提取，需要使用其他方法
-                // 这里暂时返回空字符串，实际项目中可以使用 PdfToText 或其他库
-                text.Append("[PDF 文本提取需要额外库支持] ");
-            }
-            
-            var result = text.ToString();
-            if (string.IsNullOrEmpty(result))
-                return null;
-                
-            return TextFormat(result, blockText);
-        }
-        catch
-        {
-            return null;
-        }
-    }
-
-    public async Task<string> ConvertToTextAsync(string filePath)
-    {
-        var result = ConvertToString(filePath, string.Empty);
-        if (result == null)
-            throw new Exception($"无法读取文件：{filePath}");
-        
-        return await Task.FromResult(result);
-    }
-
-    protected string TextFormat(string text, string blockText)
-    {
-        if (string.IsNullOrEmpty(blockText))
-            return text;
-
-        var blocks = blockText.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-        foreach (var block in blocks)
-        {
-            text = text.Replace(block.Trim(), string.Empty);
-        }
-        return text;
-    }
-}
-
-/// <summary>
-/// 转换器工厂
+/// 转换器工厂 - 仅支持 Word 文档
 /// </summary>
 public class ConverterFactory
 {
-    private readonly List<IDocumentConverter> _converters;
+    private readonly WordConverter _wordConverter;
 
     public ConverterFactory()
     {
-        _converters = new List<IDocumentConverter>
-        {
-            new TxtConverter(),
-            new WordConverter(),
-            new PdfConverter()
-        };
+        _wordConverter = new WordConverter();
     }
 
     public IDocumentConverter? GetConverter(string extension, SystemSettings settings)
     {
         var lowerExt = extension.ToLowerInvariant();
         
-        if (lowerExt == "txt" && settings.SupportTxt)
-            return _converters.FirstOrDefault(c => c.SupportsExtension("txt"));
-        
-        if (lowerExt == "docx" && settings.SupportDocx)
-            return _converters.FirstOrDefault(c => c.SupportsExtension("docx"));
-        
-        if (lowerExt == "doc" && settings.SupportDoc)
-        {
-            // DOC 格式需要特殊处理，暂时返回 null
-            // 实际项目中可以使用 Spire.Doc 或调用 LibreOffice
-            return null;
-        }
-        
-        if (lowerExt == "pdf" && settings.SupportPdf)
-            return _converters.FirstOrDefault(c => c.SupportsExtension("pdf"));
+        if (lowerExt == "docx")
+            return _wordConverter;
         
         return null;
     }
